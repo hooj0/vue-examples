@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>模板语法</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp} = Vue;
+
+        createApp({
+            data() {
+                return {
+                    message: 'Hello World',
+                    rawHtml: '<b style="color: red;">This should be italic!</b>',
+                    attr: 'uuid-498128934',
+                    disabled: true,
+                    readonly: false,
+                    multipleAttrs: {
+                        value: 'uuid-498128934',
+                        style: 'color: blue;',
+                        readonly: true
+                    },
+                    count: 1,
+                    status: true,
+                };
+            }
+        }).mount("#app");
+    </script>
+</head>
+
+<body>
+    <ul id="app">
+        <li> 文本插值：
+            <ol>message: {{ message }}</ol>
+        </li>
+        <li> 原始HTML：
+            <ol>rawHtml: {{ rawHtml }}</ol>
+            <ol>rawHtml v-html: <span v-html="rawHtml"></span></ol>
+        </li>
+        <li> 动态属性：
+            <ol v-bind:id="attr">v-bind:id attr: {{ attr }}</ol>
+            <ol :uid="attr">简写 :uid {{ attr }}</ol>
+            <ol :attr>同名简写 :attr {{ attr }}</ol>
+            <ol v-bind:attr>同名简写 v-bind:attr {{ attr }}</ol>
+        </li>
+        <li> 布尔类型属性：
+            <ol>
+                <input type="checkbox" :disabled="disabled"/>
+                <input type="checkbox" :readonly/> readonly = false, 属性被忽略
+            </ol>
+        </li>
+        <li> 多个属性：
+            <ol>
+                直接将多个属性绑定在对应属性上：<input v-bind="multipleAttrs"/>
+            </ol>
+        </li>
+        <li> 表达式：
+            <ol>{{ count + 1 }}</ol>
+            <ol>{{ status ? "YES" : "NO" }}</ol>
+            <ol>{{ message.split("").reverse().join(".") }}</ol>
+            <ol><span :id="`list-${attr}`">{{ `list-${attr}` }}</span></ol>
+        </li>
+    </ul>
+</body>
+</html>
