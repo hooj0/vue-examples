@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计算属性</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp, reactive, computed} = Vue;
+
+        createApp({
+            setup() {
+                const author = reactive({
+                    name: "jack",
+                    age: 22
+                });
+
+                const message = computed(() => {
+                    return `${author.name} is ${author.age} years old`;
+                });
+
+                author.age++;
+                const ageRange = computed(() => {
+                    return author.age > 18 ? "adult" : "teenager";
+                });
+
+                return {
+                    message, ageRange
+                };
+            }
+        }).mount("#app");
+
+        createApp(app2).mount("#app2");
+    </script>
+</head>
+<body>
+    <div id="app">
+        {{ message }}，{{ ageRange }}
+    </div>
+</body>
+</html>

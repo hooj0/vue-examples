@@ -28,7 +28,9 @@
                     },
                     formatDate(date) {
                         return date.toLocaleDateString();
-                    }
+                    },
+                    attrname: "name",
+                    eventname: "click",
                 };
             }
         }).mount("#app");
@@ -84,6 +86,12 @@
         <li> v-on 指令：
             <ol><a href="#" v-on:click="count++">v-on:click：{{ count }}</a></ol>
             <ol><a href="#" @click="count++">简写：{{ count }}</a></ol>
+        </li>
+        <li> 动态参数(参数小写)：
+            <ol><a v-bind:[attrname]="attr">动态参数 v-bind:[attrName]</a></ol>
+            <ol><a :[attrname]="attr">动态参数 :[attrName]</a></ol>
+            <ol><a v-on:[eventname]="count++" href="#">动态参数 v-on:[eventName]</a></ol>
+            <ol><a @[eventname].prevent="count++" href="#">动态参数 @[eventName]</a></ol>
         </li>
     </ul>
 </body>
