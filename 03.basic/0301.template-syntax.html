@@ -22,6 +22,13 @@
                     },
                     count: 1,
                     status: true,
+                    date: new Date(),
+                    getCurrentTime() {
+                        return new Date().toLocaleDateString();
+                    },
+                    formatDate(date) {
+                        return date.toLocaleDateString();
+                    }
                 };
             }
         }).mount("#app");
@@ -59,6 +66,24 @@
             <ol>{{ status ? "YES" : "NO" }}</ol>
             <ol>{{ message.split("").reverse().join(".") }}</ol>
             <ol><span :id="`list-${attr}`">{{ `list-${attr}` }}</span></ol>
+        </li>
+        <li> 调用函数：
+            <ol>
+                <time :title="getCurrentTime()" :datetime="date">{{ formatDate(date)}}</time>
+            </ol>
+        </li>
+
+        <li> v-if 指令：
+            <ol>
+                <p v-if="readonly">readOnly 的属性</p>
+                <p v-else>-readOnly 的属性</p>
+
+                <p v-if="disabled">disabled 的属性</p>
+            </ol>
+        </li>
+        <li> v-on 指令：
+            <ol><a href="#" v-on:click="count++">v-on:click：{{ count }}</a></ol>
+            <ol><a href="#" @click="count++">简写：{{ count }}</a></ol>
         </li>
     </ul>
 </body>
