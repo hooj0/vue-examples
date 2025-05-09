@@ -28,6 +28,9 @@
                     user: { name: "jack", age: 22 },
                     addr: ["china", "guangzhou"]
                 });
+                console.log("data.value:", data.value);
+                console.log("data.addr:", data.value.addr);
+                console.log("data.addr[0]:", data.value.addr[0]);
 
                 function updateUser() {
                     data.value.user.name = "tom";

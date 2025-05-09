@@ -5,7 +5,7 @@
     <title>计算属性</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module">
-        const {createApp, reactive, computed} = Vue;
+        const {createApp, reactive, computed, ref} = Vue;
 
         createApp({
             setup() {
@@ -32,13 +32,42 @@
                     return author.age > 18 ? "adult" : "teenager";
                 }
 
+                // 可计算的属性值
+                const firstName = ref("Jack");
+                const lastName = ref("Chen");
+
+                const fullName = computed({
+                    get() {
+                        return `${firstName.value} ${lastName.value}`;
+                    },
+                    // 可写的计算属性
+                    set(newValue) {
+                        [firstName.value, lastName.value] = newValue.split(" ");
+                    }
+                });
+
+                fullName.value = "jack zhang";
+                console.log("赋值：", firstName.value, lastName.value);
+
+                // 获取上一个属性值
+                const previousValue = computed({
+                    get(previous) {
+                        if (author.age < 18) {
+                            console.log("previous: ", previous);
+                            return previous;
+                        }
+                        return  author.age;
+                    },
+                    set(newValue) {
+                        author.age = newValue;
+                    }
+                });
+
                 return {
-                    message, ageRange, computedAge, author
+                    message, ageRange, computedAge, author, previousValue
                 };
             }
         }).mount("#app");
-
-        createApp(app2).mount("#app2");
     </script>
 </head>
 <body>
@@ -47,6 +76,7 @@
         <div>{{ ageRange }}</div>
         <div><button @click="author.age++">+</button> | <button @click="author.age--">-</button></div>
         <div>{{ computedAge() }}</div>
+        <div><button @click="previousValue--">{{ previousValue }}</button></div>
     </div>
 </body>
 </html>
