@@ -1,3 +1,4 @@
+<!-- 一个简单的HTML页面，去掉了部分标签，可以用 vue后缀 -->
 <script type="module">
   document.title = 'Hello Vue 3.0 + ES Module';
   

@@ -14,6 +14,7 @@
                     age: 22
                 });
 
+                // 计算属性，有缓存
                 const message = computed(() => {
                     return `${author.name} is ${author.age} years old`;
                 });
@@ -23,8 +24,16 @@
                     return author.age > 18 ? "adult" : "teenager";
                 });
 
+                // 获取计算属性值
+                console.log("age range:", ageRange.value);
+
+                // 自定义方法，每次都会从新执行，没有缓存
+                function computedAge() {
+                    return author.age > 18 ? "adult" : "teenager";
+                }
+
                 return {
-                    message, ageRange
+                    message, ageRange, computedAge, author
                 };
             }
         }).mount("#app");
@@ -34,7 +43,10 @@
 </head>
 <body>
     <div id="app">
-        {{ message }}，{{ ageRange }}
+        <div>message: {{ message }}</div>
+        <div>{{ ageRange }}</div>
+        <div><button @click="author.age++">+</button> | <button @click="author.age--">-</button></div>
+        <div>{{ computedAge() }}</div>
     </div>
 </body>
 </html>

@@ -2,12 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>CDN Vue</title>
+    <title>单页面模式 - CDN Vue</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <!-- 在浏览器中独立运行，需要 type=module -->
     <script type="module">
         const {createApp, ref} = Vue;
 
+        // 创建一个 App，也可以的同时创建多个App
         createApp({
+            // setup 函数 相当于 多页面模式中的 <script setup>
+            // 和 data() { return ...; } 具有同样的效果
             setup() {
                 const message = ref('Hello World');
                 return {
@@ -15,6 +19,7 @@
                 };
             }
         }).mount("#app");
+        //  挂载位置，相当于 template 渲染位置
     </script>
 </head>
 <body>
