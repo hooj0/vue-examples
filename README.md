@@ -44,3 +44,7 @@ npm run format
 ```shell
 npx serve
 ```
+
+# 文档
+1. [Vue3官方文档](https://v3.cn.vuejs.org/guide/introduction.html)
+2. [快查文档](https://wangchujiang.com/reference/docs/vue.html)
