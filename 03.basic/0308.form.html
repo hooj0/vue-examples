@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单输入绑定</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const message = ref("hello, Vue3!");
+                const checked = ref(true);
+                const checkedNames = ref([]);
+                const sex = ref("W ");
+                const selected = ref("");
+                const multipled = ref("");
+                const options = ref([
+                    { text: "One", value: "A" },
+                    { text: "Two", value: "B" },
+                    { text: "Three", value: "C" },
+                ]);
+
+                const toggle  = ref("yes");
+                const trueValue  = ref("yes");
+                const falseValue = ref("no");
+
+                const radio = ref("");
+                // 同时申明多个变量
+                const [male, female] = [ref("w"), ref("m")];
+
+                const age = ref(18);
+
+                return {
+                    message,
+                    checked,
+                    checkedNames,
+                    sex,
+                    selected,
+                    multipled,
+                    options,
+                    toggle,
+                    trueValue,
+                    falseValue,
+                    radio,
+                    male,
+                    female,
+                    age,
+                };
+            }
+        }).mount("body");
+    </script>
+</head>
+<body>
+    <h2>v-model 绑定值</h2>
+
+    <h3>基本用法：</h3>
+    <ul>
+        <li>
+            文本框：
+            <ol>
+                <input type="text" v-model="message"></input>
+                <p>消息：{{ message }}</p>
+            </ol>
+        </li>
+        <li>
+            多行文本：
+            <ol>
+                <textarea v-model="message"></textarea>
+                <p>消息：{{ message }}</p>
+            </ol>
+        </li>
+        <li>
+            复选框：
+            <ol>
+                <input id="checkbox" type="checkbox" v-model="checked"/>
+                <label for="checkbox">{{ checked }}</label>
+            </ol>
+        </li>
+        <li>
+            复选框集合：
+            <ol>
+                <input id="jack" type="checkbox" v-model="checkedNames" value="jack"/>
+                <label for="jack">jack</label>
+                <input id="tom" type="checkbox" v-model="checkedNames" value="tom"/>
+                <label for="tom">tom</label>
+                <input id="jackson" type="checkbox" v-model="checkedNames" value="jackson"/>
+                <label for="jackson">jackson</label>
+                <div>Checked names: {{ checkedNames }}</div>
+            </ol>
+        </li>
+        <li>
+            单选按钮：
+            <ol>
+                <input type="radio" id="one" value="W" v-model="sex"/>
+                <label for="one">W</label>
+                <input type="radio" id="two" value="M" v-model="sex"/>
+                <label for="two">M</label>
+                <div>Selected: {{ sex }}</div>
+            </ol>
+        </li>
+        <li>
+            下拉框：
+            <ol> 单选：
+                <select v-model="selected">
+                    <option value="" disabled>请选择</option>
+                    <option value="one">one</option>
+                    <option value="two">two</option>
+                    <option value="three">three</option>
+                </select>
+                <div>Selected: {{ selected }}</div>
+            </ol>
+            <ol> 多选：
+                <select v-model="multipled" multiple>
+                    <option value="" disabled>请选择</option>
+                    <option value="one">one</option>
+                    <option value="two">two</option>
+                    <option value="three">three</option>
+                </select>
+                <div>multiple Selected: {{ multipled }}</div>
+            </ol>
+        </li>
+        <li>
+            动态渲染：
+            <ol>
+                <select v-model="selected">
+                    <option v-for="item in options" :value="item.value">
+                        {{ item.text }}
+                    </option>
+                </select>
+                <div>Selected: {{ selected }}</div>
+            </ol>
+        </li>
+    </ul>
+
+    <h3>值绑定：</h3>
+    <ul>
+        <li>
+            复选框：
+            <ol>
+                yes/no: <input type="checkbox" v-model="toggle" true-value="yes" false-value="no" />
+                <div>Selected: {{ toggle }}</div>
+
+                动态绑定yes/no: <input type="checkbox" v-model="toggle" :true-value="trueValue" :false-value="falseValue" />
+            </ol>
+        </li>
+        <li>
+            单选框：
+            <ol>
+                <input type="radio" v-model="radio" :value="male" /> male
+                <input type="radio" v-model="radio" :value="female" /> female
+                <div>Selected: {{ radio }}</div>
+            </ol>
+        </li>
+        <li>
+            下拉框：
+            <ol>
+                <select v-model="selected">
+                    <option :value="{ number: 123 }">123</option>
+                    <option :value="{ data: 423 }">323</option>
+                </select>
+                <span>Selected: {{ selected }}</span>
+            </ol>
+        </li>
+    </ul>
+
+    <h3>装饰符：</h3>
+    <div>
+        <input v-model.lazy="message"> <br/>
+        <span>离开输入框后同步更新: {{ message }}</span>
+        <hr/>
+        <input v-model.number="age"/> <br/>
+        <input v-model.trim="message"/> <br/>
+    </div>
+</body>
+</html>
