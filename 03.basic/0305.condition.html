@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>条件渲染</title>
+    <script type="module">
+        import { ref, createApp, reactive, computed } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const isActive = ref(true);
+                const lang = ref("zh");
+
+                return {
+                    isActive,
+                    lang
+                };
+            }
+        }).mount("body");
+    </script>
+</head>
+<body>
+    <blockquote>
+        v-if 如果在false 则不渲染
+    </blockquote>
+    <blockquote>
+        v-show 如果在false 则不渲染，但是会保留dom结构
+    </blockquote>
+    <blockquote>
+        v-if 和 v-show 的区别：
+        v-if 在条件不满足时，会移除dom结构，v-show 则会保留dom结构，只是隐藏
+    </blockquote>
+    <button  @click="isActive = !isActive">Toggle</button>
+    <h1 v-if="isActive">hello, Vue3!</h1>
+    <h1 v-else>hallo...</h1>
+    <hr/>
+
+    <div v-if="lang === 'zh'">中文</div>
+    <div v-else-if="lang === 'en'">英文</div>
+    <div v-else-if="lang === 'og'">K文</div>
+    <div v-else>其他语言</div>
+
+    <template v-if="lang === 'zh'">
+        <div>中文</div>
+        <div>这里是中文</div>
+    </template>
+    <hr/>
+
+    <div v-show="isActive">
+        v-show 显示元素，改变 display
+    </div>
+
+</body>
+</html>
