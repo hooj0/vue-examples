@@ -10,8 +10,9 @@
             setup() {
                 const items = ref([1, 3, 5]);
                 const users = ref([
-                    { name: "jack", age: 22, addr: ["beijing", "guangzhou"] },
-                    { name: "tom", age: 18, addr: ["beijing", "shanghai"] },
+                    { name: "jason", age: 11, addr: ["beijing", "shanghai"], id: 3 },
+                    { name: "jack", age: 22, addr: ["beijing", "guangzhou"], id: 1 },
+                    { name: "tom", age: 18, addr: ["beijing", "shanghai"], id: 2 },
                 ]);
 
                 const person = reactive({
@@ -21,10 +22,28 @@
                     tel: "13211223344"
                 });
 
+                // 数组过滤
+                const nums = ref([1, 2, 3, 4, 5]);
+                const eventNums = computed(() => {
+                    return nums.value.filter(num => num % 2 === 0);
+                });
+
+                const numSets = ref([
+                    [1, 2, 3, 4, 5],
+                    [6, 7, 8, 9, 10],
+                ]);
+
+                function event(nums) {
+                    return nums.filter(num => num % 2 === 0);
+                }
+
                 return {
                     items,
                     users,
-                    person
+                    person,
+                    eventNums,
+                    numSets,
+                    event,
                 };
             }
         }).mount("body");
@@ -72,5 +91,38 @@
     <div v-for="n in 10">
         <span v-if="n > 5">{{ n }}</span>
     </div>
+    <template v-for="n in 10">
+        <div v-if="n > 5">{{ n }}</div>
+    </template>
+    <hr/>
+
+    通过Key管理状态：
+    <div v-for="user in users" :my-key="user.id">
+        <div>{{ user.name }}-{{ user.age }}</div>
+    </div>
+
+    <template v-for="user in users" :key="user.id">
+        <div>{{ user.name }}-{{ user.age }}</div>
+    </template>
+    <hr/>
+
+    组件：
+    <!--<MyComponent
+            v-for="(item, index) in items"
+            :item="item"
+            :index="index"
+            :key="item.id"
+    />-->
+    <hr/>
+
+    数组过滤：
+    <div v-for="n in eventNums">
+        {{ n }}
+    </div>
+    <ul v-for="nums in numSets">
+        <li v-for="n in event(nums)">
+            {{ n }}
+        </li>
+    </ul>
 </body>
 </html>
