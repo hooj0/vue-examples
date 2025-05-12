@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>事件处理</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const count = ref(0);
+
+                function alert() {
+                    window.alert("hello");
+                }
+
+                function test(event) {
+                    window.alert(`count: ${count.value}`);
+
+                    if (event) {
+                        window.alert(`event: ${event}, target: ${event.target.tagName}`);
+                    }
+                }
+
+                function say(message) {
+                    window.alert(message);
+                }
+
+                function handle(message, event) {
+                    if (event) {
+                        event.preventDefault();
+                        window.alert(event.target.tagName);
+                    }
+
+                    window.alert(message);
+                }
+
+                return {
+                    count,
+                    alert,
+                    test,
+                    say,
+                    handle,
+                };
+            }
+        }).mount("body");
+    </script>
+</head>
+<body>
+    <h3>内联事件处理：</h3>
+    <div>
+        <button v-on:click="count++">+</button>
+        <p>count: {{ count }}</p>
+    </div>
+    <hr/>
+
+    <h3>方法事件处理：</h3>
+    <div>
+        <button @click="alert">click me</button><br/>
+        <button @click="test">事件测试</button><br/>
+        <button @click="say('hallo')">内联方法</button><br/>
+    </div>
+
+    <h3>访问参数：</h3>
+    <div>
+        <button @click="handle('hello', $event)">$event 参数</button><br/>
+        <button @click="(event) => handle('箭头函数', event)">内联箭头函数</button><br/>
+    </div>
+
+    <h3>事件修饰符：</h3>
+    <div>
+        <button @click.prevent="test">提交事件将不再重新加载页面</button><br/>
+        <button @click.stop="test">单击事件将停止传递</button><br/>
+        <button @click.self="test">是元素本身时才会触发事件处理器</button><br/>
+        <!-- 修饰语可以使用链式书写 -->
+        <a @click.stop.prevent="test"></a>
+        <!-- 也可以只有修饰符 -->
+        <form @submit.prevent></form>
+        <!-- 例如：指向内部元素的事件，在被内部元素处理前，先被外部处理 -->
+        <button @click.capture="test">添加事件监听器时，使用 `capture` 捕获模式</button><br/>
+        <button @click.once="test">点击事件最多被触发一次</button><br/>
+        <button @click.passive="test">用于触摸事件的监听器，可以用来改善移动端设备的滚屏性能</button><br/>
+        <button @click.native="test">native</button><br/>
+    </div>
+
+    <h3>按键修饰符：</h3>
+    <div>
+        <input type="text" @keyup.enter="test" value="Enter" /><br/>
+        <input type="text" @keyup.tab="test" value="Tab" /><br/>
+        <input type="text" @keyup.page-down="test" value="PageDown" /><br/>
+
+        <input type="text" @keyup.alt.enter="test" value="Alt + Enter" /><br/>
+        <input type="text" @keyup.ctrl="test" value="ctrl + 任意键" /><br/>
+        <input type="button" @click.ctrl="test" value="ctrl + 鼠标点击" /><br/>
+
+        <button type="text" @click.ctrl.exact="test">仅当按下 Ctrl + 鼠标点击 时才会触发</button><br/>
+        <button type="text" @click.exact="test">仅当 鼠标点击（未按键盘键） 时才会触发</button><br/>
+    </div>
+
+    <h3>鼠标按键修饰符：</h3>
+    <div>
+        <input type="button" @click.left="test" value="鼠标左键点击" /><br/>
+        <input type="button" @click.middle="test" value="鼠标中键点击" /><br/>
+        <input type="button" @click.right="test" value="鼠标右键点击" /><br/>
+    </div>
+</body>
+</html>
