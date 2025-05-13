@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>侦听器</title>
+    <script type="module">
+        import { ref, createApp, watch, reactive } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const question = ref("");
+                const answer = ref("这里出现答案");
+                const loading = ref(false);
+                const image = ref("");
+
+                watch(question, async (newQuestion, oldQuestion) => {
+                    if (newQuestion.includes("?")) {
+                        loading.value = true;
+                        answer.value = "正在思考...";
+
+                        try {
+                            const res = await fetch("https://yesno.wtf/api");
+                            const data = await res.json();
+                            answer.value = data.answer;
+                            image.value = data.image;
+                        } catch (e) {
+                            answer.value = "无法获取答案";
+                        } finally {
+                            loading.value = false;
+                        }
+                    }
+                });
+
+                // -------------------------------------------------------------------------------------------------
+                // 侦听数据源
+                const x = ref(0);
+                const y = ref(0);
+
+                // 侦听x值
+                watch(x, (newX) => {
+                    console.log("x changed", newX);
+                });
+
+                // getter 函数计算数据
+                watch(() => x.value + y.value, (sum) => {
+                    console.log("x + y =", sum);
+                });
+
+                // 主要监听x数据，传入 y 值
+                watch([x, () => y.value], ([newX, newY]) => {
+                    console.log("x and y changed", newX, newY);
+                });
+
+                // -------------------------------------------------------------------------------------------------
+                // XXX Error 这里不能直接监听 reactive 的属性值
+                const data = reactive({ count: 1 });
+                /*watch(data.count, (newCount) => {
+                    console.log("count changed", newCount);
+                });*/
+
+                // getter 方法进行监听
+                watch(() => data.count, (newCount) => {
+                    console.log("count changed", newCount);
+                });
+
+                // -------------------------------------------------------------------------------------------------
+                const objectData = reactive({ index: 10, num: 10 });
+                watch(objectData, (newData, oldData) => {
+                    console.log(newData === oldData);
+
+                    // data 的属性值改变时都会触发
+                    console.log("data changed", newData, oldData);
+                });
+
+                // 返回时getter 转为深度监听
+                watch(() => objectData, (newData, oldData) => {
+                    // 仅当index属性值改变时才会触发
+                    console.log("index changed", newData, oldData);
+                }, {deep: true}); // deep 可以是数字 对象深度
+
+                // -------------------------------------------------------------------------------------------------
+                // 立即回调的监听器，加载页面时 监听器会立即执行一次
+                watch(() => objectData, (newData, oldData) => {
+                    console.log("objectData changed", newData, oldData);
+                }, {immediate: true});
+
+                // -------------------------------------------------------------------------------------------------
+                const once = ref(0);
+                // 一次性 监听器，加载页面时 监听器会立即执行一次，并且只执行一次
+                watch(once, (newData, oldData) => {
+                    console.log("once changed", newData, oldData);
+                }, {once: true});
+
+                return {
+                    answer,
+                    loading,
+                    question,
+                    image,
+                    x, y,
+                    data,
+                    objectData,
+                    once,
+                }
+            }
+        }).mount("body");
+    </script>
+</head>
+<body>
+    <h3>问题：</h3>
+    <div>
+        <p>
+            问一个是/否的问题:
+            <input v-model="question" :disabled="loading" />
+        </p>
+        <p>{{ answer }}</p>
+        <img :src="image" />
+    </div>
+
+    <h3>监听器：</h3>
+    <div>
+        <button @click="x++">X++</button>
+        <button @click="y++">Y++</button><br/>
+        <button @click="data.count++">count++</button>
+    </div>
+
+    <h3>深层监听(对象)：</h3>
+    <div>
+        <button @click="objectData.num++">num++</button>
+        <button @click="objectData.index++">index++</button>
+    </div>
+
+    <h3>一次性监听：</h3>
+    <div>
+        <button @click="once++">once++</button>
+    </div>
+</body>
+</html>
