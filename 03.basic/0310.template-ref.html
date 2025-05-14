@@ -8,6 +8,7 @@
 
         createApp({
             setup() {
+                // --------访问模板引用---------------------------------------------------------------------
                 const input = useTemplateRef('text-input');
 
                 onMounted(() => {
@@ -22,31 +23,51 @@
                     }
                 });
 
-                // -----------------------------------------------------------------------------
+                // --------v-for 模板引用---------------------------------------------------------------------
                 const list = ref(["a", "b", "c"]);
                 const itemRefs = useTemplateRef('items');
                 onMounted(() => {
-                    console.log("itemRefs: ", itemRefs.value);
+                    console.log("onMounted => itemRefs: ", itemRefs.value);
                 });
 
                 watch(list.value, (newX) => {
-                    console.log("itemRefs: ", itemRefs.value);
+                    console.log("watch => itemRefs: ", itemRefs.value);
                 }, {flush: "post"});
+
+                // --------函数模板引用---------------------------------------------------------------------
+                const element = ref(null);
+                watch(element, (el) => {
+                    console.log("watch => element: ", el.value);
+                });
+
+                watchEffect(() => {
+                    console.log("watchEffect => element: ", element.value);
+                });
+
+                onMounted(() => {
+                    console.log("onMounted => element: ", element.value);
+                });
+
+                function getInput(el) {
+                    console.log("el: ", el.value);
+                }
 
                 return {
                     list,
+                    element,
+                    getInput,
                 }
             }
         }).mount("body");
     </script>
 </head>
 <body>
-    <h3>模板引用：</h3>
+    <h3>访问模板引用：</h3>
     <div>
         <input type="text" ref="text-input"/>
     </div>
 
-    <h3>v-for 引用：</h3>
+    <h3>v-for 模板引用：</h3>
     <div>
         <div ref="items" v-for="item in list">
             {{ item }}
@@ -54,9 +75,10 @@
         <button @click="list.push('d')">添加</button>
     </div>
 
-    <h3>函数模板引用：</h3>
+    <h3>函数模板引用(被调用一次)：</h3>
     <div>
-        <input :ref="(el) => {  }">
+        <input :ref="(el) => { element = el }" value="2233"> <br/>
+        <input :ref="getInput" value="55ll"><br/>
     </div>
 </body>
 </html>
