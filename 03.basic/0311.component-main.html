@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件基础</title>
+    <script type="module">
+        import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { default as MyComponent, CalcSumComponent, PropsComponent, EventComponent } from './0311.component.js'
+
+        createApp(MyComponent).mount("#defaultCmp");
+        createApp(CalcSumComponent).mount("#calcSumCmp");
+
+        createApp({
+            // 注册组件
+            components: {
+                PropsComponent,
+                EventComponent,
+            },
+            setup() {
+                const msgList = ref(["vue", "hallo", "3.0"]);
+                const blogs = ref([{title: "vue3.0", author: "jason",}, {title: "vue2.0", author: "jack",},]);
+
+                const goHome = function (title) {
+                    window.alert("go home: " + title);
+                };
+
+                return {
+                    msg: 'Hello Vue 3.0!',
+                    msgList,
+                    blogs,
+                    goHome,
+                }
+            }
+        }).mount("#render-component");
+    </script>
+</head>
+<body>
+    <h3>计数组件（默认组件）</h3>
+    <div id="defaultCmp"></div>
+
+    <h3>累计组件</h3>
+    <div id="calcSumCmp"></div>
+
+    <template id="calc-sum-component">
+        <div>
+            <button @click="count++">点击累加：{{ count }}</button>
+        </div>
+    </template>
+
+    <div id="render-component">
+        <h3>传递Props：</h3>
+        <div>
+            <!-- 当使用闭合标签，后面的代码不正常执行
+            <props-component msg="Hello Vue!!!"/>
+            -->
+            <props-component :msg="msg"></props-component>
+            <props-component v-for="message in msgList" :msg="message"></props-component>
+        </div>
+
+        <h3>监听事件：</h3>
+        <div>
+            <event-component v-for="blog in blogs" :title="blog.title" :author="blog.author" @go-home="goHome(blog.title)"/>
+        </div>
+    </div>
+</body>
+</html>
