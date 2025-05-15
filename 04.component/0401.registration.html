@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件注册</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import SimpleComponent from './cmp/simple-component.js'
+
+        const app = createApp({
+            setup() {
+            }
+        });
+
+        // 全局注册组件，要在 “挂载” 之前执行
+        app.component('my-component', {
+            template: '<div>Simple Component</div>',
+        }).component('props-component', {
+            template: '<div>{{ msg }}</div>',
+            props: {
+                msg: {
+                    type: String,
+                    default: 'Hello Vue 3.0!',
+                },
+            },
+        });
+
+        // 导入JavaScript 组件
+        app.component('simple-component', SimpleComponent);
+
+        app.mount("body");
+    </script>
+</head>
+<body>
+    <h3>全局组件</h3>
+    <my-component></my-component>
+    <props-component></props-component>
+    <props-component msg="Hallo Component!"></props-component>
+    <!-- 导入JavaScript 组件 -->
+    <simple-component></simple-component>
+
+    <h3>局部组件</h3>
+
+</body>
+</html>
