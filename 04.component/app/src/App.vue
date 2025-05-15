@@ -1,22 +1,29 @@
 <script setup>
 import HelloWorld from './components/HelloWorld.vue'
-
 // 局部导入
-import SimpleComponent from './components/SimpleComponent.vue'
+import SimpleComponent from './components/registration/SimpleComponent.vue'
+import AddCount from "./components/basic/AddCount.vue";
 </script>
 
 <template>
-  <HelloWorld msg="Vite + Vue"/>
+  <h1>组件基础</h1>
   <div>
-    <h2>自定义组件</h2>
+      <h3>基础组件</h3>
+      <add-count />
+      <AddCount  />
+  </div>
 
+  <h1>组件注册</h1>
+  <div>
+    <h3>局部组件</h3>
     <!-- 局部注册 -->
     <SimpleComponent message="局部注册组件"/>
-  </div>
-  <div>
-    <h2>全局组件</h2>
+
+    <h3>全局组件</h3>
     <my-simple-component message="全局注册组件"></my-simple-component>
   </div>
+
+  <HelloWorld msg="默认示例"/>
 </template>
 
 <style scoped>
