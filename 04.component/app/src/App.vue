@@ -3,6 +3,8 @@ import HelloWorld from './components/HelloWorld.vue'
 // 局部导入
 import SimpleComponent from './components/registration/SimpleComponent.vue'
 import AddCount from "./components/basic/AddCount.vue";
+import MessageTemplate from "./components/basic/MessageTemplate.vue";
+import SlotMessageTemplate from "./components/basic/SlotMessageTemplate.vue";
 </script>
 
 <template>
@@ -11,6 +13,10 @@ import AddCount from "./components/basic/AddCount.vue";
       <h3>基础组件</h3>
       <add-count />
       <AddCount  />
+      <message-template title="props 使用方法" content="这是一个示例" />
+      <slot-message-template>
+          插槽使用方法
+      </slot-message-template>
   </div>
 
   <h1>组件注册</h1>
