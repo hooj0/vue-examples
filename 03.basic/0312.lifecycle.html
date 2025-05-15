@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>生命周期</title>
+    <script type="module">
+        import {
+            createApp, ref,
+            onMounted, onUnmounted, onBeforeUnmount, onBeforeMount,
+            onUpdated, onBeforeUpdate,
+            onActivated, onDeactivated, // 注册一个回调函数
+            onServerPrefetch,   // 注册一个异步函数，在组件实例在服务器上被渲染之前调用
+            onErrorCaptured,
+            onRenderTracked, onRenderTriggered,
+        } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const app = createApp({
+            setup() {
+
+                onBeforeMount(() => {
+                    console.log("onBeforeMount：挂载之前调用");
+                });
+
+                onMounted(() => {
+                    console.log("onMounted：在组件挂载完成后执行");
+                });
+
+                onBeforeUnmount(() => {
+                    console.log("onBeforeUnmount：卸载之前调用");
+                });
+
+                onUnmounted(() => {
+                    console.log("onUnmounted：在组件实例被卸载之后调用");
+                });
+
+                onBeforeUpdate(() => {
+                    console.log("onBeforeUpdate：更新之前调用");
+                });
+
+                onUpdated(() => {
+                    console.log("onUpdated：在组件因为响应式状态变更而更新其 DOM 树之后调用");
+                });
+
+                onActivated(() => {
+                    console.log("onActivated：当组件被插入到 DOM 中时调用");
+                });
+
+                onDeactivated(() => {
+                    console.log("onDeactivated：当组件从 DOM 中被移除时调用");
+                });
+
+                onErrorCaptured((err, instance, info) => {
+                    console.log("onErrorCaptured：在捕获了后代组件传递的错误时调用");
+                    /* 错误可以从以下几个来源中捕获：
+                        组件渲染
+                        事件处理器
+                        生命周期钩子
+                        setup() 函数
+                        侦听器
+                        自定义指令钩子
+                        过渡钩子
+                     */
+                });
+
+                onRenderTracked(() => {
+                    console.log("onRenderTracked：渲染过程中追踪到响应式依赖被触发");
+                });
+
+                onRenderTriggered(() => {
+                    console.log("onRenderTriggered：当响应式依赖的变更触发了组件渲染时调用");
+                });
+
+                onServerPrefetch(() => {
+                    console.log("onServerPrefetch：在组件实例在服务器上被渲染之前调用");
+                });
+
+                const msg = ref("Hello Vue 3.0!");
+
+                return {
+                    msg,
+                };
+            }
+        });
+
+        app.config.errorHandler = (err, instance, info) => {
+            console.log("errorHandler：全局错误处理函数");
+        };
+
+        app.mount("body");
+
+        document.getElementById("unmountButton").addEventListener("click", () => {
+            app.unmount(); // 卸载组件
+        });
+    </script>
+</head>
+<body>
+    <a href="https://cn.vuejs.org/guide/essentials/lifecycle.html#lifecycle-diagram" target="_blank">生命周期流程图</a>
+    <div>
+        <div>{{ msg }}</div>
+        <button @click="msg = 'Hallo Vue 3.0!'">修改</button><br/>
+        <button id="unmountButton">卸载</button>
+    </div>
+</body>
+</html>
