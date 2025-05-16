@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组件事件</title>
+    <script type="module">
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const callback = function () {
+                    window.alert("go home");
+                };
+
+                const getCount = function (count) {
+                    window.alert("get count: " + count);
+                };
+
+                return {
+                    callback,
+                    getCount,
+                }
+            },
+        }).component('event-component', {
+            data() {
+                return {
+                    title: "自定义事件",
+                }
+            },
+            methods: {
+                submit() {
+                    // 内部显示调用
+                    this.$emit("goHome");
+                },
+            },
+            template: "#event-component-template",
+        }).component('event-param', {
+            template: "#event-param-template",
+        }).mount("body");
+    </script>
+</head>
+
+<template id="event-component-template">
+    <div>
+        <button @click="$emit('goHome')">{{ title }}</button>
+        <input type="submit" value="submit触发go-home" @click="submit"/>
+    </div>
+</template>
+
+<template id="event-param-template">
+    <div>
+        <button @click="$emit('counter', 1)">接收参数</button>
+    </div>
+</template>
+
+<body>
+    <h3>事件触发和监听</h3>
+    <event-component @go-home="callback"></event-component>
+    <event-component @go-home.once="callback"></event-component>
+
+    <h3>事件参数</h3>
+    <event-param @counter="getCount"></event-param>
+    <event-param @counter="(n) => console.log(n)"></event-param>
+</body>
+</html>
