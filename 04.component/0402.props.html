@@ -4,21 +4,126 @@
     <meta charset="UTF-8">
     <title>Props 组件属性</title>
     <script type="module">
-        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
         createApp().component('one-way-data-flow', {
             props: {
-                msg: {
+                count: {
+                    type: Number,
+                    default: -1,
+                },
+                message: {
                     type: String,
-                    default: '单向数据流',
+                    default: 'Hello Vue 3.0!',
+                },
+                user: {
+                    type: Object,
+                    default: () => ({
+                        name: 'Jason',
+                        age: 18,
+                    }),
+                },
+                address: {
+                    type: Array,
+                    default: () => ['beijing', 'shanghai'],
                 },
             },
-            template: '<div>{{ msg }}</div>',
+            data() {
+                // XXX 不建议修改 props 对象和数组的值
+                const $this = this;
+                function updateAddressProps() {
+                    $this.address.push("guangzhou");
+                    console.log("props address: ", $this.address);
+                }
+
+                return {
+                    // 获取 props count的初始值
+                    counter: this.count,
+                    userInfo: this.user,
+                    addressInfo: this.address,
+                    updateAddressProps,
+                }
+            },
+            computed: {
+                // 计算属性
+                doubleCount() {
+                    return this.counter * 2;
+                },
+                upperCaseMessage() {
+                    return this.message.toUpperCase();
+                }
+            },
+            setup(props) {
+                // 获取 props count 的值
+                console.log("props count: ", props.count);
+
+                // 获取 props message 的值
+                console.log("props message: ", props.message);
+
+                // 获取 props user 的值
+                console.log("props user: ", props.user);
+
+                // 获取 props address 的值
+                console.log("props address: ", props.address);
+
+                // XXX 修改 props 对象和数组的值
+                props.user.name = "TOM";
+                props.address.push("CHINA");
+
+                // XXX 不建议修改 props 对象和数组的值
+                function updateUserProps() {
+                    props.user.name = "JACK";
+                    console.log("props user: ", props.user);
+                }
+
+                return {
+                    updateUserProps,
+                }
+            },
+            template: "#data-flow"
+        }).component('props-validation', {
+            props: {
+                msg: {
+                    type: String,
+                    default: 'Hello Vue 3.0!',
+                },
+                author: {
+                    type: Object,
+                    default: () => ({
+                        name: 'Jason',
+                        age: 18,
+                    }),
+                },
+            },
+            template: "#validation"
         }).mount("body");
     </script>
+    <style>
+        .warn {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
 </head>
+
+<template id="data-flow">
+    <div>单向数据流：{{ count }}/{{ message }}</div>
+    <div>获取初始值：{{ counter }}</div>
+    <div>计算属性转换值：{{ doubleCount }}/{{ upperCaseMessage }}</div>
+    <button @click="updateUserProps">{{ user }}/{{ user.name }}</button><br/>
+    <button @click="updateAddressProps">{{ address }}</button><br/>
+</template>
+
+<template id="validation">
+    <div>Props 校验：{{ msg }}/{{ author.name }}/{{ author.age }}</div>
+</template>
+
 <body>
     <h3>Props 单向数据流</h3>
-    <one-way-data-flow></one-way-data-flow>
+    <one-way-data-flow :count="10" :user="{ name: 'jack', age: 100 }"></one-way-data-flow>
+    <div class="warn">PROPS: 进行值传递和字符串传递区别在于，是否使用 v-bind (:) 绑定形式，<br/>不使用 v-bind 绑定，则使用字符串传递，反之使用 v-bind 绑定，则使用对象传递。</div>
+
+    <h3>Props 校验</h3>
+    <props-validation></props-validation>
 </body>
 </html>
