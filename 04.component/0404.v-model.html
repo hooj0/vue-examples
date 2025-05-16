@@ -9,16 +9,20 @@
         createApp({
             setup() {
                 const message = ref("hello, Vue3!");
+                const useranme = ref("jack");
+                const titleName = ref("hello, Vue3!");
 
                 watchEffect(() => {
                     console.log("message: " + message.value);
                 });
-
-                const useranme = ref("jack");
+                watchEffect(() => {
+                    console.log("title: " + titleName.value);
+                });
 
                 return {
                     message,
                     useranme,
+                    titleName,
                 }
             }
         }).component('my-input', {
@@ -40,6 +44,10 @@
                 }
             },
             template: "#custom-input-template"
+        }).component('custom-input-param', {
+            props: ['title'],
+            emits: ['update:title'],
+            template: "#custom-input-param-template"
         }).mount("body");
     </script>
 </head>
@@ -52,9 +60,17 @@
     <input type="text" v-model="value" />
 </template>
 
+<template id="custom-input-param-template">
+    <input type="text" :value="title" @input="$emit('update:title', $event.target.value)" />
+</template>
+
 <body>
     <h3>v-model 自定义输入框</h3>
     <my-input v-model="message"></my-input><br/>
     <custom-input v-model="useranme"></custom-input>
+
+    <h3>v-model 参数</h3>
+    {{ titleName  }}
+    <custom-input-param v-model:title="titleName"></custom-input-param>
 </body>
 </html>
