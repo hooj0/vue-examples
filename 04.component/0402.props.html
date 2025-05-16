@@ -6,6 +6,13 @@
     <script type="module">
         import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
+        class Person {
+            constructor(name, age) {
+                this.name = name;
+                this.age = age;
+            }
+        }
+
         createApp().component('one-way-data-flow', {
             props: {
                 count: {
@@ -83,17 +90,64 @@
             template: "#data-flow"
         }).component('props-validation', {
             props: {
-                msg: {
+                name: String,
+                // 可选项
+                sex: [Number, Boolean],
+                // Boolean类型，存在属性名称时 传值为true，无属性时传值为 false
+                disabled: [Boolean, String],
+                // 必填项
+                password: {
                     type: String,
-                    default: 'Hello Vue 3.0!',
+                    required: true,
                 },
-                author: {
+                // 必填项，可为空
+                age: {
+                    type: [Number, null],
+                    required: true,
+                },
+                id: {
+                    type: Number,
+                    default: 10,
+                },
+                account: {
                     type: Object,
-                    default: () => ({
-                        name: 'Jason',
-                        age: 18,
-                    }),
+                    default(rawProps) {
+                        console.log("validation props account: ", rawProps);
+                        return {
+                            accountName: "Jason",
+                            accountNo: 10021548518,
+                        }
+                    }
                 },
+                address: {
+                    type: Array,
+                    default() {
+                        return ["beijing", "shanghai"];
+                    }
+                },
+                valid: {
+                    validator(value, rawProps) {
+                        console.log("props validator: ", value, ", props: ", rawProps);
+                        return value.length > 10;
+                    }
+                },
+                func: {
+                    type: Function,
+                    default() {
+                        return function() {
+                            console.log("validation props function: ", arguments);
+                        }
+                    }
+                },
+                // 自定义类型，如果传入类型不是Person对象，则不通过检查
+                person: {
+                    type: Person
+                }
+            },
+            data() {
+                return {
+                    personInfo: new Person("tom", 10),
+                }
             },
             template: "#validation"
         }).mount("body");
@@ -115,7 +169,18 @@
 </template>
 
 <template id="validation">
-    <div>Props 校验：{{ msg }}/{{ author.name }}/{{ author.age }}</div>
+    <div><b>name：</b> {{ name }}</div>
+    <div><b>sex: </b> {{ sex }}</div>
+    <div><b>password: </b> {{ password }}</div>
+    <div><b>age: </b> {{ age }}</div>
+    <div><b>id: </b> {{ id }}</div>
+    <div><b>account: </b> {{ account }}</div>
+    <div><b>address: </b> {{ address }}</div>
+    <div><b>valid: </b> {{ valid }}</div>
+    <div><b>func: </b> {{ func }}</div>
+    <button @click="func('hello world')">{{ func }}</button>
+    <div><b>person: </b> {{ person }}/{{ personInfo }}</div>
+    <div><b>disabled: {{ disabled }} </b></div>
 </template>
 
 <body>
@@ -124,6 +189,18 @@
     <div class="warn">PROPS: 进行值传递和字符串传递区别在于，是否使用 v-bind (:) 绑定形式，<br/>不使用 v-bind 绑定，则使用字符串传递，反之使用 v-bind 绑定，则使用对象传递。</div>
 
     <h3>Props 校验</h3>
-    <props-validation></props-validation>
+    <div>
+        校验选项中的 type 可以是下列这些原生构造函数：
+        String
+        Number
+        Boolean
+        Array
+        Object
+        Date
+        Function
+        Symbol
+        Error
+    </div>
+    <props-validation name="jack" :sex="false" password="abc123" :age="12" :valid="'abc1122334455'" :address="[1, 2]" :person="personInfo" disabled></props-validation>
 </body>
 </html>
