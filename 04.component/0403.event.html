@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>组件事件</title>
     <script type="module">
-        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
         createApp({
             setup() {
@@ -36,6 +36,37 @@
             template: "#event-component-template",
         }).component('event-param', {
             template: "#event-param-template",
+        }).component('event-emit', {
+            emits: ['eFocus', 'eSubmit'],
+            template: "#event-emit-template",
+        }).component('event-validation', {
+            emits: {
+                click: null,
+                submit: ({username, password}) => {
+                    console.log("用户名：" + username + " 密码：" + password);
+                    if (username.length > 5 && password.length > 5) {
+                        return true;
+                    } else {
+                        console.warn("用户名或密码长度不符合要求");
+                        return false;
+                    }
+                },
+            },
+            methods: {
+                submitForm(name, pwd) {
+                    this.$emit('submit', {username: name, password: pwd});
+                },
+            },
+            data() {
+                const name = ref("");
+                const pwd = ref("");
+
+                return {
+                    name,
+                    pwd,
+                }
+            },
+            template: "#event-validation-template",
         }).mount("body");
     </script>
 </head>
@@ -53,6 +84,21 @@
     </div>
 </template>
 
+<template id="event-emit-template">
+    <div>
+        <button @click="$emit('eFocus')">focus</button>
+        <button @click="$emit('eSubmit')">submit</button>
+    </div>
+</template>
+
+<template id="event-validation-template">
+    <div>
+        <input type="text" name="name" v-model="name" />
+        <input type="password" name="pwd" v-model="pwd"/>
+        <button type="submit" @click="submitForm(name, pwd)">submit</button>
+    </div>
+</template>
+
 <body>
     <h3>事件触发和监听</h3>
     <event-component @go-home="callback"></event-component>
@@ -61,5 +107,11 @@
     <h3>事件参数</h3>
     <event-param @counter="getCount"></event-param>
     <event-param @counter="(n) => console.log(n)"></event-param>
+
+    <h3>声明触发事件</h3>
+    <event-emit @e-focus="() => console.log('focus')" @e-submit="() => console.log('submit')"></event-emit>
+
+    <h3>事件校验</h3>
+    <event-validation></event-validation>
 </body>
 </html>
