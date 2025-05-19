@@ -108,6 +108,41 @@
                 }
             },
             template: "#custom-modifier-args-template"
+        }).component('multiple-modifier-args', {
+            props: {
+                firstName: String,
+                lastName: String,
+                firstNameModifiers: {
+                    default: () => ({})
+                },
+                lastNameModifiers: {
+                    default: () => ({})
+                }
+            },
+            emits: ['update:firstName', 'update:lastName'],
+            created() {
+                console.log("firstNameModifiers: ", this.firstNameModifiers);
+                console.log("lastNameModifiers: ", this.lastNameModifiers);
+            },
+            methods: {
+                emitFirstName(e) {
+                    let value = e.target.value;
+                    if (this.firstNameModifiers.capitalize) {
+                        value = value.charAt(0).toUpperCase() + value.slice(1);
+                    }
+
+                    this.$emit('update:firstName', value);
+                },
+                emitLastName(e) {
+                    let value = e.target.value;
+                    if (this.lastNameModifiers.uppercase) {
+                        value = value.toUpperCase();
+                    }
+
+                    this.$emit('update:lastName', value);
+                }
+            },
+            template: "#multiple-modifier-args-template"
         }).mount("body");
     </script>
 </head>
@@ -137,6 +172,11 @@
     <input type="text" :value="title" @input="emitValue" />
 </template>
 
+<template id="multiple-modifier-args-template">
+    <input type="text" :value="firstName" @input="emitFirstName" />
+    <input type="text" :value="lastName" @input="emitLastName" />
+</template>
+
 <body>
     <h3>v-model 自定义输入框</h3>
     <my-input v-model="message"></my-input><br/>
@@ -154,5 +194,8 @@
     <custom-modifier v-model.uppercase="titleName"></custom-modifier><br/>
     <custom-modifier-args v-model:title.lowercase="titleName"></custom-modifier-args>
     <div>titleName: {{ titleName }}</div>
+    <hr/>
+    <multiple-modifier-args v-model:first-name.capitalize="firstname" v-model:last-name.uppercase="lastname"></multiple-modifier-args>
+    <div>firstName: {{ firstname }}, lastName: {{ lastname }}</div>
 </body>
 </html>
