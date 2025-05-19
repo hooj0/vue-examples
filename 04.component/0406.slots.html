@@ -37,6 +37,19 @@
             template: "#slot-scope-template"
         }).component('slot-scope-named', {
             template: "#slot-scope-named-template"
+        }).component('slot-list', {
+            data() {
+                const users = ref([
+                    {id: 1, name: "张三", age: 18},
+                    {id: 2, name: "李四", age: 19},
+                    {id: 3, name: "王五", age: 20},
+                ]);
+
+                return {
+                    users
+                }
+            },
+            template: "#slot-list-template"
         }).mount("body");
     </script>
 </head>
@@ -109,6 +122,17 @@
         <slot name="footer" count="100">
             <div>默认footer</div>
         </slot>
+    </div>
+</template>
+
+<template id="slot-list-template">
+    <div>
+        <div v-for="user in users">
+            <slot name="user" v-bind="user">
+                <div>用户名：{{ user.name }}</div>
+                <div>年龄：{{ user.age }}</div>
+            </slot>
+        </div>
     </div>
 </template>
 
@@ -216,5 +240,14 @@
             <div>{{ count }}</div>
         </template>
     </slot-scope-named>
+    <hr/>
+
+    <slot-list>
+        <template #user="{ name, age, id }">
+            <span>用户id：{{ id }},</span>
+            <span>用户名：{{ name }},</span>
+            <span>年龄：{{ age }}</span>
+        </template>
+    </slot-list>
 </body>
 </html>
