@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>透传属性</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp, ref} = Vue;
+
+        createApp({
+            setup() {
+                const user = ref({firstname: 'jack', lastname: 'ma', age: 22});
+
+                return {
+                    user,
+                }
+            }
+        }).component('my-input', {
+            props: ['firstName', 'lastName'],
+            emits: ['go-home'],
+            // inheritAttrs: false,
+            template: "#my-input-template",
+            data() {
+                const age = ref(20);
+
+                return {
+                    age,
+                }
+            },
+        }).component('base-input', {
+            props: ["age"],
+            emits: ['go'],
+            data() {
+                const message = ref('hi');
+
+                return {
+                    message,
+                }
+            },
+            created() {
+                // 访问 attrs 透传属性
+                console.log("$attrs: ", this.$attrs);
+            },
+            template: "#base-input-template",
+        }).component('use-base-input', {
+            data() {
+                const age = ref(20);
+                this.message = 'hello';
+
+                return {
+                    age,
+                }
+            },
+            extends: 'base-input',
+            template: "#use-base-input-template",
+        }).mount("body");
+    </script>
+
+    <style>
+        .active {
+            color: red;
+        }
+
+        .border {
+            border: 1px solid red;
+        }
+    </style>
+</head>
+
+<template id="my-input-template">
+    <!-- class 和 组件使用时传入的class 将会合并 -->
+    <!-- style 属性 同样支持合并透传 -->
+    <!-- v-on @ 事件支持透传合并 -->
+    <input type="text" :value="firstName + '-' + lastName" @blur="$emit('go-home', this)"
+           class="border"
+           style="font-weight: bold;"
+    />
+    <!-- 继承属性 -->
+    <div v-bind="$attrs">继承属性: {{ $attrs }}</div>
+</template>
+
+<template id="base-input-template">
+    <input type="text" :value="age" @blur="$emit('go')"/>
+    <!-- 透传属性 -->
+    <div v-bind="$attrs">{{ message }}</div>
+</template>
+
+<template id="use-base-input-template">
+    <base-input :age="age" @go="() => console.log('go')"></base-input>
+</template>
+
+<body>
+    <h3>attr 继承</h3>
+    <my-input
+            :first-name="user.firstname"
+            :last-name="user.lastname"
+            @go-home="(e) => console.log('go home', e)"
+            class="active"
+            style="font-size: 15px;"
+            @click="() => console.log('click go')"
+    ></my-input>
+
+    <h3>组件继承</h3>
+    <use-base-input class="border"></use-base-input>
+</body>
+</html>
