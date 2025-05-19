@@ -4,13 +4,15 @@
     <meta charset="UTF-8">
     <title>组件 v-model</title>
     <script type="module">
-        import { ref, createApp, watchEffect } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { ref, createApp, watchEffect, watch } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
         createApp({
             setup() {
                 const message = ref("hello, Vue3!");
                 const useranme = ref("jack");
-                const titleName = ref("hello, Vue3!");
+                const titleName = ref("HELLO, Vue3!");
+                const firstname = ref("jack");
+                const lastname = ref("chen");
 
                 watchEffect(() => {
                     console.log("message: " + message.value);
@@ -19,10 +21,25 @@
                     console.log("title: " + titleName.value);
                 });
 
+                // 节流函数
+                function debounce(fun, delay) {
+                    let timer;
+                    return function (...args) {
+                        clearTimeout(timer);
+                        timer = setTimeout(() => fun.apply(this, args), delay);
+                    }
+                }
+
+                watch(() => ({firstName: firstname.value, lastName: lastname.value}), debounce((newValue) => {
+                    console.log("first name: " + newValue.firstName, ", lastname: ", newValue.lastName);
+                }, 500), {flush: 'post'});
+
                 return {
                     message,
                     useranme,
                     titleName,
+                    firstname,
+                    lastname,
                 }
             }
         }).component('my-input', {
@@ -48,6 +65,49 @@
             props: ['title'],
             emits: ['update:title'],
             template: "#custom-input-param-template"
+        }).component('multiple-bind', {
+            props: ['firstName', 'lastName'],
+            emits: ['update:firstName', 'update:lastName'],
+            template: "#multiple-bind-template"
+        }).component('custom-modifier', {
+            props: {
+                modelValue: String,
+                modelModifiers: {
+                    default: () => ({})
+                },
+            },
+            emits: ['update:modelValue'],
+            created() {
+                console.log("modelModifiers: ", this.modelModifiers);
+            },
+            methods: {
+                emitValue(e) {
+                    let value = e.target.value;
+                    if (this.modelModifiers.uppercase) {
+                        value = value.toUpperCase();
+                    }
+
+                    this.$emit('update:modelValue', value);
+                }
+            },
+            template: "#custom-modifier-template"
+        }).component('custom-modifier-args', {
+            props: ['title', 'titleModifiers'],
+            emits: ['update:title'],
+            created() {
+                console.log("titleModifiers: ", this.titleModifiers);
+            },
+            methods: {
+                emitValue(e) {
+                    let value = e.target.value;
+                    if (this.titleModifiers.lowercase) {
+                        value = value.toLowerCase();
+                    }
+
+                    this.$emit('update:title', value);
+                }
+            },
+            template: "#custom-modifier-args-template"
         }).mount("body");
     </script>
 </head>
@@ -64,6 +124,19 @@
     <input type="text" :value="title" @input="$emit('update:title', $event.target.value)" />
 </template>
 
+<template id="multiple-bind-template">
+    <input type="text" :value="firstName" @input="$emit('update:firstName', $event.target.value)" />
+    <input type="text" :value="lastName" @input="$emit('update:lastName', $event.target.value)" />
+</template>
+
+<template id="custom-modifier-template">
+    <input type="text" :value="modelValue" @input="emitValue" />
+</template>
+
+<template id="custom-modifier-args-template">
+    <input type="text" :value="title" @input="emitValue" />
+</template>
+
 <body>
     <h3>v-model 自定义输入框</h3>
     <my-input v-model="message"></my-input><br/>
@@ -72,5 +145,14 @@
     <h3>v-model 参数</h3>
     {{ titleName  }}
     <custom-input-param v-model:title="titleName"></custom-input-param>
+
+    <h3>多个v-model绑定</h3>
+    <multiple-bind v-model:first-name="firstname" v-model:last-name="lastname"></multiple-bind>
+    <div>firstName: {{ firstname }}, lastName: {{ lastname }}</div>
+
+    <h3>v-model 修饰符</h3>
+    <custom-modifier v-model.uppercase="titleName"></custom-modifier><br/>
+    <custom-modifier-args v-model:title.lowercase="titleName"></custom-modifier-args>
+    <div>titleName: {{ titleName }}</div>
 </body>
 </html>
