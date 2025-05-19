@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>插槽</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp, ref} = Vue;
+
+        createApp({
+            setup() {
+                const message = ref("hello world");
+                const dynamic_slot_name = "dynamic_slot_name_b";
+
+                return {
+                    message,
+                    dynamic_slot_name,
+                }
+            }
+        }).component('slot-button', {
+            props: ['text'],
+            template: "#slot-button-template"
+        }).component('slot-default', {
+            template: "#slot-default-template"
+        }).component('slot-named', {
+            template: "#slot-named-template"
+        }).component('slot-condition', {
+            template: "#slot-condition-template"
+        }).component('slot-dynamic', {
+            template: "#slot-dynamic-template"
+        }).component('slot-scope', {
+            data() {
+                return {
+                    slotMessage: "hello slot",
+                }
+            },
+            template: "#slot-scope-template"
+        }).component('slot-scope-named', {
+            template: "#slot-scope-named-template"
+        }).mount("body");
+    </script>
+</head>
+
+<template id="slot-button-template">
+    <button @click="() => console.log('click')" :text="text">
+        <slot></slot>
+        <span>{{ text }}</span>
+    </button>
+</template>
+
+<template id="slot-default-template">
+    <button>
+        <slot>默认按钮文本</slot>
+    </button>
+</template>
+
+<template id="slot-named-template">
+    <div>
+        <header>
+            <slot name="head"></slot>
+        </header>
+        <main>
+            <slot>默认按钮文本</slot>
+        </main>
+        <footer>
+            <slot name="foot"></slot>
+        </footer>
+    </div>
+</template>
+
+<template id="slot-condition-template">
+    <div>
+        <div v-if="$slots.header">
+            <slot name="header" />
+        </div>
+        <div v-if="$slots.default">
+            <slot/>
+        </div>
+        <div v-if="$slots.footer">
+            <slot name="footer" />
+        </div>
+    </div>
+</template>
+
+<template id="slot-dynamic-template">
+    <div>
+        <slot name="dynamic_slot_name_a">
+            动态插槽A
+        </slot>
+    </div>
+    <div>
+        <slot name="dynamic_slot_name_b">
+            动态插槽B
+        </slot>
+    </div>
+</template>
+
+<template id="slot-scope-template">
+    <div>
+        <slot :text="slotMessage" :count="1"></slot>
+    </div>
+</template>
+
+<template id="slot-scope-named-template">
+    <div>
+        <slot name="header" message="具名插槽">
+            <div>默认header</div>
+        </slot>
+        <slot name="footer" count="100">
+            <div>默认footer</div>
+        </slot>
+    </div>
+</template>
+
+<body>
+    <h3>插槽</h3>
+    <slot-button text="click me">点击</slot-button>
+
+    <h3>渲染作用域</h3>
+    <slot-button text="click me">点击 - {{ message }} /</slot-button>
+    <div>{{ message }}</div>
+
+    <h3>插槽默认值</h3>
+    <slot-default></slot-default>
+    <slot-default>覆盖默认值</slot-default>
+
+    <h3>具名插槽</h3>
+    <slot-named>
+        <template v-slot:head>
+            <div>head</div>
+        </template>
+        <!--没有名称的插槽，默认名称为 default-->
+        <template v-slot:default>
+            <div>default</div>
+        </template>
+        <!--简写名称 v-slot:foot = #foot-->
+        <template #foot>
+            <div>foot</div>
+        </template>
+    </slot-named>
+
+    <slot-named>
+        <template #head>
+            <h4>页面标题</h4>
+            <hr/>
+        </template>
+        <template #default>
+            <p>这里是内容</p>
+            <p>这里是内容，可以很多内容</p>
+        </template>
+        <template #foot>
+            <div>这里页面底部</div>
+        </template>
+    </slot-named>
+
+    <slot-named>
+        <template #head>
+            <h4>页面标题</h4>
+            <hr/>
+        </template>
+        <p>默认插槽</p>
+        <p>默认插槽：这里是内容，可以很多内容</p>
+        <template #foot>
+            <div>这里页面底部</div>
+        </template>
+    </slot-named>
+
+    <h3>条件插槽</h3>
+    <slot-condition>
+        <template #header>
+            <div>header</div>
+        </template>
+        <template #footer>
+            <div>footer</div>
+        </template>
+    </slot-condition>
+
+    <h3>动态插槽名</h3>
+    <slot-dynamic>
+        <template v-slot:dynamic_slot_name_a>
+            插槽a
+        </template>
+        <template #dynamic_slot_name_b>
+            插槽b
+        </template>
+
+        <template #[dynamic_slot_name]>
+            动态插槽
+        </template>
+    </slot-dynamic>
+
+    <h3>作用域插槽(获取插槽上的属性值)</h3>
+    <slot-scope v-slot="slotProps">
+        <div>{{ slotProps.text }}</div>
+        <div>{{ slotProps.count }}</div>
+    </slot-scope>
+
+    <slot-scope v-slot="{ text, count }">
+        <div>{{ text }}</div>
+        <div>{{ count }}</div>
+    </slot-scope>
+    <hr/>
+    <slot-scope-named>
+        <template #header="headerProps">
+            <div>{{ headerProps }}</div>
+        </template>
+        <template #footer="footerProps">
+            <div>{{ footerProps }}</div>
+        </template>
+    </slot-scope-named>
+    <slot-scope-named>
+        <template #header="{ message }">
+            <div>{{ message }}</div>
+        </template>
+        <template #footer="{ count }">
+            <div>{{ count }}</div>
+        </template>
+    </slot-scope-named>
+</body>
+</html>
