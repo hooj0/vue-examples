@@ -11,6 +11,10 @@
             setup() {
 
             }
+        }).provide("global", { // 应用级别，全局访问
+            app: "provide-inject",
+            author: "JKoi",
+            version: "v2.22"
         }).component('provide-hallo', {
             provide: {
                 message: "hello world"
@@ -41,10 +45,26 @@
                 console.log("provide-data-inject", this.global.app, this.global.author);
             },
             template: "#provide-data-inject-template"
-        }).provide("global", { // 应用级别，全局访问
-            app: "provide-inject",
-            author: "JKoi",
-            version: "v2.22"
+        }).component('provide-data-inject-alias', {
+            inject: {
+                message: "message",
+                // 本地 别名
+                injectTitle: {
+                    // 注入来源 名称
+                    from: "titleName"
+                },
+                global: {
+                    default: "global"
+                },
+                user: {
+                    default: () => ({name: "user", age: 18})
+                }
+            },
+            created() {
+                console.log("provide-data-inject-alias", this.message, this.injectTitle);
+                console.log("provide-data-inject-alias", this.global.app, this.global.author);
+            },
+            template: "#provide-data-inject-alias-template"
         }).mount("body");
     </script>
 </head>
@@ -60,7 +80,10 @@
 </template>
 
 <template id="provide-data-template">
-    <provide-data-inject/>
+    <provide-data-inject></provide-data-inject>
+    <hr/>
+    <h4>子组件注入时使用别名</h4>
+    <provide-data-inject-alias></provide-data-inject-alias>
 </template>
 
 <template id="provide-data-inject-template">
@@ -75,11 +98,32 @@
     </div>
 </template>
 
+<template id="provide-data-inject-alias-template">
+    <div>
+        provide-data-inject-alias
+        <div>
+            provide-data-inject-alias 消息： {{ message }}
+        </div>
+        <div>
+            provide-data-inject-alias titleName： {{ injectTitle }}
+        </div>
+        <div>
+            provide-data-inject-alias global： {{ global.app }}
+        </div>
+        <div>
+            provide-data-inject-alias user default： {{ user.name }}-{{ user.age }}
+        </div>
+    </div>
+</template>
+
 <body>
     <h3>简单依赖注入</h3>
     <provide-hallo></provide-hallo>
 
     <h3>data()依赖注入</h3>
     <provide-data></provide-data>
+
+    <h3>配好响应式</h3>
+
 </body>
 </html>
