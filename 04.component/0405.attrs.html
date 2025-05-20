@@ -21,20 +21,16 @@
             // inheritAttrs: false,
             template: "#my-input-template",
             data() {
-                const age = ref(20);
-
                 return {
-                    age,
+                    age: 19,
                 }
             },
         }).component('base-input', {
             props: ["age"],
             emits: ['go'],
             data() {
-                const message = ref('hi');
-
                 return {
-                    message,
+                    message: "hilo",
                 }
             },
             created() {
@@ -44,11 +40,10 @@
             template: "#base-input-template",
         }).component('use-base-input', {
             data() {
-                const age = ref(20);
                 this.message = 'hello';
 
                 return {
-                    age,
+                    age: 212
                 }
             },
             //XXX 无效
