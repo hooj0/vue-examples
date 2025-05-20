@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>异步组件</title>
+    <script type="module">
+        import { ref, createApp, defineAsyncComponent, hydrateOnIdle, hydrateOnVisible, hydrateOnMediaQuery, hydrateOnInteraction } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+
+            }
+        }).component('my-component', defineAsyncComponent(() =>
+            import('./cmp/simple-component.js')
+        )).component('error-message', {
+            template: "#error-message-template"
+        }).component('loading-message', {
+            template: "#loading-message-template"
+        }).component('add-count', defineAsyncComponent({
+            // 加载组件的函数
+            loader: () => import('./cmp/simple-component.js'),
+            // 延迟渲染的毫秒数
+            delay: 1000,
+            // 超时毫秒数
+            timeout: 3000,
+            loadingComponent: 'loading-message',
+            errorComponent: 'error-message',
+            onError(error, retry, fail) {
+                if (error.message.match(/fetch/) && retry) {
+                    retry()
+                } else {
+                    fail()
+                }
+            },
+            // 惰性激活
+            // 在空闲时激活
+            // hydrate: hydrateOnIdle(30000),
+            // 在可见时激活
+            // hydrate: hydrateOnVisible(),
+            // 在媒体查询匹配时进行激活
+            // hydrate: hydrateOnMediaQuery('(max-width: 768px)'),
+            // 交互时激活
+            hydrate: hydrateOnInteraction('click')
+        }))
+        .mount("body");
+    </script>
+</head>
+
+<template id="error-message-template">
+    <div class="error-message">
+        <p>An error occurred</p>
+        <button @click="retry">Retry</button>
+    </div>
+</template>
+
+<template id="loading-message-template">
+    <div class="loading-message">
+        <p>Loading...</p>
+    </div>
+</template>
+
+<body>
+    <h3>异步组件</h3>
+    <my-component></my-component>
+    <add-count></add-count>
+</body>
+</html>
