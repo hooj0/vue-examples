@@ -5,7 +5,7 @@
     <title>依赖注入</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module">
-        const {createApp, ref} = Vue;
+        const {createApp, ref, computed} = Vue;
 
         createApp({
             setup() {
@@ -65,6 +65,22 @@
                 console.log("provide-data-inject-alias", this.global.app, this.global.author);
             },
             template: "#provide-data-inject-alias-template"
+        }).component('provide-computed', {
+            data() {
+                return {
+                    message: "hello provide",
+                    title: "OMG~!"
+                }
+            },
+            provide() {
+                return {
+                    message: computed(() => this.message + " - " + this.title)
+                }
+            },
+            template: "#provide-computed-template"
+        }).component('provide-computed-inject', {
+            inject: ["message"],
+            template: "#provide-computed-inject-template"
         }).mount("body");
     </script>
 </head>
@@ -116,6 +132,26 @@
     </div>
 </template>
 
+<template id="provide-computed-template">
+    <div>
+        provide-computed
+        <div>
+            <input type="text" v-model="title">
+            <input type="text" v-model="message">
+        </div>
+    </div>
+    <provide-computed-inject></provide-computed-inject>
+</template>
+
+<template id="provide-computed-inject-template">
+    <div>
+        provide-computed-inject
+        <div>
+            provide-computed-inject 消息： {{ message }}
+        </div>
+    </div>
+</template>
+
 <body>
     <h3>简单依赖注入</h3>
     <provide-hallo></provide-hallo>
@@ -123,7 +159,7 @@
     <h3>data()依赖注入</h3>
     <provide-data></provide-data>
 
-    <h3>配好响应式</h3>
-
+    <h3>配合响应式</h3>
+    <provide-computed></provide-computed>
 </body>
 </html>
