@@ -50,6 +50,26 @@
                 }
             },
             template: "#slot-list-template"
+        }).component('slot-mouse', {
+            data() {
+                return {
+                    mouseX: 0,
+                    mouseY: 0,
+                }
+            },
+            methods: {
+                update(e) {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                }
+            },
+            mounted() {
+                document.addEventListener("mousemove", this.update);
+            },
+            unmounted() {
+                document.removeEventListener("mousemove", this.update);
+            },
+            template: '#slot-mouse-template'
         }).mount("body");
     </script>
 </head>
@@ -134,6 +154,17 @@
             </slot>
         </div>
     </div>
+</template>
+
+<template id="slot-mouse-template">
+    <!--这里属性命名，到插槽使用模板时，将会是全小写-->
+    <!--<slot :mouseX="mouseX" :mouseY="mouseY">
+        <div>鼠标位置：{{ mouseX }}, {{ mouseY }}</div>
+    </slot>-->
+
+    <slot :mouse-x="mouseX" :mouse-y="mouseY">
+        <div>鼠标位置：{{ mouseX }}, {{ mouseY }}</div>
+    </slot>
 </template>
 
 <body>
@@ -250,5 +281,14 @@
             <span>年龄：{{ age }}</span>
         </template>
     </slot-list>
+
+    <hr/>
+    <slot-mouse v-slot="slotProps">
+        <div>鼠标位置：{{ slotProps }}</div>
+    </slot-mouse>
+
+    <slot-mouse v-slot="{mouseX, mouseY}">
+        <div>鼠标位置：x: {{ mouseX }}, y: {{ mouseY }}</div>
+    </slot-mouse>
 </body>
 </html>
