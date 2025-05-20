@@ -3,17 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <title>依赖注入</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script type="module">
-        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        const {createApp, ref} = Vue;
 
         createApp({
             setup() {
 
             }
+        }).component('provide-hallo', {
+            provide: {
+                message: "hello world"
+            },
+            template: "#provide-hallo-template"
+        }).component('provide-hallo-inject', {
+            inject: ["message"],
+            template: "#provide-hallo-inject-template"
+        }).component('provide-data', {
+            data() {
+                return {
+                    message: "hello provide",
+                    title: "OMG~!"
+                }
+            },
+            provide() {
+                return {
+                    // this 可以访问到 data  中的属性，仅限 provide是函数的情况
+                    message: this.message,
+                    titleName: this.title
+                }
+            },
+            template: "#provide-data-template"
+        }).component('provide-data-inject', {
+            inject: ["message", "titleName", "global"],
+            created() {
+                console.log("provide-data-inject", this.message, this.titleName);
+                console.log("provide-data-inject", this.global.app, this.global.author);
+            },
+            template: "#provide-data-inject-template"
+        }).provide("global", { // 应用级别，全局访问
+            app: "provide-inject",
+            author: "JKoi",
+            version: "v2.22"
         }).mount("body");
     </script>
 </head>
-<body>
 
+<template id="provide-hallo-template">
+    <provide-hallo-inject/>
+</template>
+
+<template id="provide-hallo-inject-template">
+    <div>
+       这里是注入的消息： {{ message }}
+    </div>
+</template>
+
+<template id="provide-data-template">
+    <provide-data-inject/>
+</template>
+
+<template id="provide-data-inject-template">
+    <div>
+        provide-data-inject
+        <div>
+            provide-data-inject 消息： {{ message }}
+        </div>
+        <div>
+            provide-data-inject titleName： {{ titleName }}
+        </div>
+    </div>
+</template>
+
+<body>
+    <h3>简单依赖注入</h3>
+    <provide-hallo></provide-hallo>
+
+    <h3>data()依赖注入</h3>
+    <provide-data></provide-data>
 </body>
 </html>
