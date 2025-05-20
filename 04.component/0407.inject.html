@@ -7,6 +7,9 @@
     <script type="module">
         const {createApp, ref, computed} = Vue;
 
+        const injectName = Symbol();
+        const injectAge = Symbol();
+
         createApp({
             setup() {
 
@@ -81,6 +84,24 @@
         }).component('provide-computed-inject', {
             inject: ["message"],
             template: "#provide-computed-inject-template"
+        }).component('provide-symbol', {
+            provide() {
+                return {
+                    [injectName]: "hello symbol",
+                    [injectAge]: 18
+                }
+            },
+            template: "#provide-symbol-template"
+        }).component('provide-symbol-inject', {
+            inject: {
+                name: {
+                    from: injectName
+                },
+                age: {
+                    from: injectAge
+                }
+            },
+            template: "#provide-symbol-inject-template"
         }).mount("body");
     </script>
 </head>
@@ -152,6 +173,22 @@
     </div>
 </template>
 
+<template id="provide-symbol-template">
+    <provide-symbol-inject></provide-symbol-inject>
+</template>
+
+<template id="provide-symbol-inject-template">
+    <div>
+        provide-symbol-inject
+        <div>
+            provide-symbol-inject 消息： {{ name }}
+        </div>
+        <div>
+            provide-symbol-inject age： {{ age }}
+        </div>
+    </div>
+</template>
+
 <body>
     <h3>简单依赖注入</h3>
     <provide-hallo></provide-hallo>
@@ -161,5 +198,8 @@
 
     <h3>配合响应式</h3>
     <provide-computed></provide-computed>
+
+    <h3>使用Symbol注入名</h3>
+    <provide-symbol></provide-symbol>
 </body>
 </html>
