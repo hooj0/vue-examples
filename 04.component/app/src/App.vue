@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, defineAsyncComponent, hydrateOnInteraction } from 'vue';
 
 import HelloWorld from './components/basic/HelloWorld.vue'
 
@@ -17,9 +17,40 @@ import PropsCompositionComponent from "./components/props/PropsCompositionCompon
 import PropsWatchEventDeconstruction     from "./components/props/PropsWatchEventDeconstruction.vue";
 import PropsInputComponent from "./components/props/PropsInputComponent.vue";
 
+// 异步组件
+import ErrorMessage from "./components/async/ErrorMessage.vue";
+import LoadingMessage from "./components/async/LoadingMessage.vue";
+
 const userInfo = ref({
     userName: 'tom',
     userAge: 122
+});
+
+const AsyncMessage = defineAsyncComponent({
+    // 加载组件的函数
+    loader: () => import('./components/async/AsyncMessage.vue'),
+    // 延迟渲染的毫秒数
+    delay: 1000,
+    // 超时毫秒数
+    timeout: 3000,
+    loadingComponent: LoadingMessage,
+    errorComponent: ErrorMessage,
+    onError(error, retry, fail) {
+        if (error.message.match(/fetch/) && retry) {
+            retry()
+        } else {
+            fail()
+        }
+    },
+    // 惰性激活
+    // 在空闲时激活
+    // hydrate: hydrateOnIdle(30000),
+    // 在可见时激活
+    // hydrate: hydrateOnVisible(),
+    // 在媒体查询匹配时进行激活
+    // hydrate: hydrateOnMediaQuery('(max-width: 768px)'),
+    // 交互时激活
+    hydrate: hydrateOnInteraction('click')
 });
 </script>
 
@@ -60,6 +91,11 @@ const userInfo = ref({
         <props-input-component user-age="22" user-name="jack"></props-input-component>
         <props-input-component v-bind:user-age="userInfo.userAge" :user-name="userInfo.userName + 'haha'"></props-input-component>
         <props-input-component v-bind="userInfo"></props-input-component>
+    </div>
+
+    <h1>异步组件</h1>
+    <div>
+        <async-message></async-message>
     </div>
 </template>
 
