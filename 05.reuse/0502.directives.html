@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>自定义指令</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+
+            },
+            directives: {
+                highlight: {
+                    mounted(el) {
+                        el.classList.add("highlight");
+                    }
+                }
+            }
+        }).mount("body");
+    </script>
+    <style>
+        h3 {
+            color: transparent;
+            max-width: 12em;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(45deg, black, #ccc) 1;
+            background-image: linear-gradient(90deg, green, blue);
+            background-clip: text;
+        }
+
+        .highlight {
+            background-color: yellow;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h3>简单指令</h3>
+    <div v-highlight>hello world</div>
+</body>
+</html>
