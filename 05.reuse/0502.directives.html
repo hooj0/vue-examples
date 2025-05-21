@@ -12,7 +12,13 @@
 
         createApp({
             setup() {
+                const color = ref("red");
+                const baz = ref("hallo");
 
+                return {
+                    color,
+                    baz,
+                }
             },
             // 局部指令
             directives: {
@@ -64,6 +70,16 @@
                 el.style.fontSize = "20px";
                 el.style.color = "blue";
             }
+        }).directive("color", (el, binding) => {
+            console.log("arg", binding.arg);
+            console.log("modifiers", binding.modifiers);
+            console.log("value", binding.value);
+
+            // 在 mounted 和 updated 时都调用
+            el.style.color = binding.value;
+        }).directive("user", (el, binding) => {
+            console.log("value:", binding.value);
+            console.log("user:", binding.value.name,  binding.value.age);
         }).mount("body");
     </script>
     <style>
@@ -88,6 +104,12 @@
     <div v-font v-hook>hello vue</div>
 
     <h3>指令生命周期钩子</h3>
-    <div v-hook:foo.bar="foo">生命周期测试</div>
+    <div v-hook:foo.bar="baz">生命周期测试</div>
+
+    <h3>简化形式</h3>
+    <div v-color="color">简化形式测试</div>
+
+    <h3>对象字面量</h3>
+    <div v-user="{name: 'jack', age: 22}">Object</div>
 </body>
 </html>
