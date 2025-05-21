@@ -4,12 +4,65 @@
     <meta charset="UTF-8">
     <title>插件</title>
     <script type="module">
-        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+        import pluginI18n from "./libs/plugin-i18n.js";
+
+        const myPlugin = {
+            install(app, options) {
+                app.config.globalProperties.$myGlobalMethod = function () {
+                    console.log("全局方法");
+                };
+
+                app.config.globalProperties.$user  = {
+                    name: "myPlugin-property",
+                    age: 18
+                };
+
+                app.provide("myPluginProvide", {
+                    name: "myPlugin-provide",
+                    options
+                });
+
+                app.component("my-plugin-component", {
+                    setup() {
+                        return {
+                            name: "myPlugin-component"
+                        }
+                    },
+                    inject: ["myPluginProvide"],
+                    template: `<div>{{ name }}</div>
+                    <div>{{ $user }}</div>
+                    <div>{{ myPluginProvide }}</div>
+                    `,
+                });
+
+                app.directive("plugin-directive", {
+                    mounted(el) {
+                        el.innerHTML = "myPlugin-directive" + el.innerHTML;
+                    }
+                });
+            }
+        };
 
         createApp({
             setup() {
 
             }
+        }).component("i18n-component", {
+            inject: ["i18n"],
+            created() {
+                console.log(this.i18n);
+            },
+            template: "#i18n-component-template"
+        }).use(myPlugin, {
+            // 可选选项
+            foo: "bar",
+            baz: "xyz",
+        }).use(pluginI18n, {
+            message: {
+                hello: "你好",
+                world: "世界",
+            },
         }).mount("body");
     </script>
     <style>
@@ -23,7 +76,20 @@
         }
     </style>
 </head>
-<body>
 
+<template id="i18n-component-template">
+    <div>{{i18n.message.hello}}</div>
+</template>
+
+<body>
+    <h3>自定义组件</h3>
+    <my-plugin-component></my-plugin-component>
+    <div v-plugin-directive>插件的指令</div>
+    <div>插件全局属性：{{ $user }}</div>
+    <div>插件全局函数：{{ $myGlobalMethod() }}</div>
+
+    <h3>i18n插件</h3>
+    <div>{{ $translate("message.hello") }}-{{ $translate("message.world") }}</div>
+    <i18n-component></i18n-component>
 </body>
 </html>
