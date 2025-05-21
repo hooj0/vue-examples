@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>组合式函数</title>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script type="module">
+        const {createApp, ref, toValue, reactive} = Vue;
+        import {useMouse, useMouseComposition} from "./libs/mouse-point.js";
+        import {useAsyncFetch, useAsyncFetchComposition} from "./libs/async-fetch.js";
+
+        createApp({
+            setup() {
+            }
+        }).component('mouse-point-simple', {
+            data() {
+                const {x, y} = useMouse();
+                return {x, y}
+            },
+            template: "#mouse-point-simple-template"
+        }).component('mouse-point-composition', {
+            data() {
+                const {x, y} = useMouseComposition();
+
+                // 返回对象响应式数据
+                const mouse = reactive(useMouse());
+
+                return {x, y, mouse}
+            },
+            template: "#mouse-point-composition-template"
+        }).component('async-fetch', {
+            setup() {
+                const {data, error} = useAsyncFetch("https://jsonplaceholder.typicode.com/todos/1");
+
+                return {
+                    data,
+                    error,
+                }
+            },
+            template: "#async-fetch-template"
+        }).component('async-fetch-composition', {
+            setup() {
+                const url = ref("https://jsonplaceholder.typicode.com/todos/1");
+                const {data, error} = useAsyncFetchComposition(url);
+
+                // toValue 将 ref/getter值转换为普通值文本
+                console.log("url: ", url, ", toValue:", toValue(url));
+
+                return {
+                    data,
+                    error,
+                    url,
+                }
+            },
+            template: "#async-fetch-composition-template"
+        }).mount("body");
+    </script>
+    <style>
+        h3 {
+            color: transparent;
+            max-width: 12em;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(45deg, black, #ccc) 1;
+            background-image: linear-gradient(90deg, green, blue);
+            background-clip: text;
+        }
+    </style>
+</head>
+
+<template id="mouse-point-simple-template">
+    <strong>组合式函数：useMouse()</strong>
+    <div>
+        鼠标位置：
+        <span>x: {{x}}, </span>
+        <span>y: {{y}}</span>
+    </div>
+</template>
+
+<template id="mouse-point-composition-template">
+    <strong>组合式函数：useMouseComposition()</strong>
+    <div>
+        鼠标位置：
+        <span>x: {{x}}, </span>
+        <span>y: {{y}}</span>
+        <div>reactive：X: {{ mouse.x }}, Y: {{ mouse.y }}</div>
+    </div>
+</template>
+
+<template id="async-fetch-template">
+    <strong>普通组件：</strong>
+    <div v-if="error">OMG Something went wrong! {{ error.message }}</div>
+    <div v-else-if="data">
+        data is here:
+        <pre>{{ data }}</pre>
+    </div>
+    <div v-else>
+        Loading...
+    </div>
+</template>
+
+<template id="async-fetch-composition-template">
+    <strong>组合式函数 带参：</strong>
+    <div v-if="error">OMG ERROR!!! {{ error.message }}</div>
+    <div v-else-if="data">
+        DATA IS HERE:
+        <pre>{{ data }}</pre>
+    </div>
+    <div v-else>
+        LOADING...
+    </div>
+    <button @click="url = 'https://jsonplaceholder.typicode.com/todos/' + Math.round(Math.random() * 100)">Fetch Data: {{ url }}</button>
+</template>
+
+<body>
+    <h3>鼠标跟踪轨迹</h3>
+    <mouse-point-simple></mouse-point-simple>
+    <mouse-point-composition></mouse-point-composition>
+
+    <h3>异步状态</h3>
+    <async-fetch></async-fetch>
+    <async-fetch-composition></async-fetch-composition>
+</body>
+</html>
