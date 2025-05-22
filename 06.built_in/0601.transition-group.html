@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TransitionGroup</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js';
+        import { gsap } from 'https://unpkg.com/gsap?module';
+
+        createApp({
+            setup() {
+                const items = ref([
+                    { id: 1, text: 'Item 1' },
+                    { id: 2, text: 'Item 2' },
+                    { id: 3, text: 'Item 3' },
+                ]);
+
+                return {
+                    items,
+                }
+            },
+            methods: {
+                insert() {
+                    this.items.splice(Math.floor(Math.random() * this.items.length), 0, {
+                        id: (this.items.length + 1),
+                        text: 'Item ' + (this.items.length + 1)
+                    });
+                },
+                remove() {
+                    const index = Math.floor(Math.random() * this.items.length);
+                    this.items.splice(index, 1);
+                },
+                shuffle() {
+                    this.items = [...this.items].sort(() => Math.random() - 0.5);
+                },
+            }
+        }).component('query-transition-group', {
+            data() {
+                return {
+                    words: [
+                        { id: 1, text: 'Hallo' },
+                        { id: 2, text: 'Hello' },
+                        { id: 3, text: 'Vue' },
+                        { id: 4, text: 'World' },
+                        { id: 5, text: 'JavaScript' },
+                        { id: 6, text: 'CSS' },
+                        { id: 7, text: 'HTML' },
+                    ],
+                    search: "",
+                }
+            },
+            computed: {
+                computedWords() {
+                    return this.words.filter(word => word.text.toLowerCase().includes(this.search));
+                }
+            },
+            methods: {
+                enter(el, done) {
+                    gsap.to(el, {
+                        opacity: 1,
+                        height: '1.6em',
+                        delay: el.dataset.index * 0.15,
+                        onComplete: done
+                    });
+                },
+                beforeEnter(el) {
+                    el.style.opacity = 0;
+                    el.style.height = 0;
+                },
+                leave(el, done) {
+                    gsap.to(el, {
+                        opacity: 0,
+                        height: 0,
+                        delay: el.dataset.index * 0.15,
+                        onComplete: done
+                    });
+                }
+            },
+            template: "#query-transition-group-template"
+        }).mount("body");
+    </script>
+    <style>
+        h3 {
+            color: transparent;
+            max-width: 12em;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(45deg, black, #ccc) 1;
+            background-image: linear-gradient(90deg, green, blue);
+            background-clip: text;
+        }
+
+        .list-move, /* 对移动中的元素进行过渡动画 */
+        .list-enter-active,
+        .list-leave-active {
+            transition: all 0.5s ease;
+        }
+
+        .list-enter-from,
+        .list-leave-to {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .list-leave-active {
+            position: absolute;
+        }
+    </style>
+</head>
+
+<template id="query-transition-group-template">
+    <input v-model="search" placeholder="Search">
+    <transition-group tag="ul" :css="false" @before-enter="beforeEnter" @enter="enter" @leave="leave">
+        <li v-for="(item, index) in computedWords" :key="item.id" :data-index="index">
+            {{ item.text }}
+        </li>
+    </transition-group>
+</template>
+
+<body>
+    <h3>TransitionGroup</h3>
+    <button @click="insert()">随机添加</button>
+    <button @click="remove()">随机删除</button>
+    <button @click="shuffle()">随机乱序</button>
+    <transition-group name="list" tag="ul">
+        <li v-for="item in items" :key="item.id">
+            {{ item.text }}
+        </li>
+    </transition-group>
+
+    <h3>延迟动画</h3>
+    <query-transition-group></query-transition-group>
+</body>
+</html>
