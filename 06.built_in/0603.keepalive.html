@@ -2,13 +2,59 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>这是模板</title>
+    <title>KeepAlive</title>
     <script type="module">
         import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
         createApp({
-            setup() {
-
+            data() {
+                return  {
+                    show: true,
+                    current: "counter-cmp",
+                    view:  "counter-cmp",
+                };
+            }
+        }).component('counter-cmp', {
+            name: "counter",
+            template: `
+                <div>
+                    计数：{{count}} <button @click="count++">+</button>
+                </div>
+            `,
+            data() {
+                return {
+                    count: 1,
+                };
+            }
+        }).component('input-cmp', {
+            name: "input",
+            template: `
+                <div>
+                    输入：<input type="text" v-model="text">
+                </div>
+            `,
+            data() {
+                return {
+                    text: "",
+                };
+            }
+        }).component('welcome-cmp', {
+            name: "welcome",
+            template: `
+                <div>
+                    欢迎：<input type="text" v-model="name"/>
+                </div>
+            `,
+            data() {
+                return {
+                    name: "Vue3",
+                };
+            },
+            activated() {
+                console.log("在首次挂载、以及每次从缓存中被重新插入的时候调用");
+            },
+            deactivated() {
+                console.log("在组件从 DOM 中移除的时候调用，以及组件卸载时调用");
             }
         }).mount("body");
     </script>
@@ -24,6 +70,48 @@
     </style>
 </head>
 <body>
+    <h3>动态切换组件</h3>
+    <div>
+        <button @click="show = !show">切换</button>
+        <component :is="show ? 'counter-cmp' : 'input-cmp'"></component>
+    </div>
 
+    <h3>keep-alive</h3>
+    <div>
+        <button @click="show = !show">缓存组件</button>
+        <keep-alive>
+            <component :is="show ? 'counter-cmp' : 'input-cmp'"></component>
+        </keep-alive>
+    </div>
+
+    <h3>包含</h3>
+    <div>
+        <label><input type="radio" v-model="current" value="counter-cmp"/>Counter</label>
+        <label><input type="radio" v-model="current" value="input-cmp"/>Input</label>
+        <label><input type="radio" v-model="current" value="welcome-cmp"/>Welcome</label>
+        <!--include 关联组件的 name-->
+        <keep-alive include="input,counter">
+            <component :is="current"></component>
+        </keep-alive>
+    </div>
+
+    <h3>排除</h3>
+    <div>
+        <label><input type="radio" v-model="view" value="counter-cmp"/>Counter</label>
+        <label><input type="radio" v-model="view" value="input-cmp"/>Input</label>
+        <label><input type="radio" v-model="view" value="welcome-cmp"/>Welcome</label>
+        <!--exclude 关联组件的 name-->
+        <keep-alive exclude="input" :max="5">
+            <component :is="view"></component>
+        </keep-alive>
+    </div>
+
+    <h3>缓存选项</h3>
+    <div>
+        max: 最多缓存组件数
+    </div>
+    <keep-alive :max="5">
+        <component :is="view"></component>
+    </keep-alive>
 </body>
 </html>
