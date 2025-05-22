@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Teleport</title>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+
+            }
+        }).component('modal', {
+            data() {
+                return {
+                    open: false
+                }
+            },
+            template: "#modal-template"
+        }).component('teleport-modal', {
+            data() {
+                return {
+                    open: false
+                }
+            },
+            template: "#teleport-modal-template"
+        }).mount("body");
+    </script>
+    <style>
+        h3 {
+            color: transparent;
+            max-width: 12em;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(45deg, black, #ccc) 1;
+            background-image: linear-gradient(90deg, green, blue);
+            background-clip: text;
+        }
+
+        .modal {
+            position: fixed;
+            z-index: 999;
+            top: 20%;
+            left: 50%;
+            width: 300px;
+            margin-left: -150px;
+            border: 1px solid black;
+        }
+    </style>
+</head>
+
+<template id="modal-template">
+    <button @click="open = true">Open Modal</button>
+    <div v-if="open" class="modal">
+        <p>Hello from the Modal</p>
+        <button @click="open = false">
+            Close
+        </button>
+    </div>
+</template>
+
+<template id="teleport-modal-template">
+    <button @click="open = true">Open Modal</button>
+    <teleport to="body">
+        <div v-if="open" class="modal">
+            <p>Hello from the Modal</p>
+            <button @click="open = false">
+                Close
+            </button>
+        </div>
+    </teleport>
+</template>
+
+<body>
+    <h3>模态窗口</h3>
+    <div class="outer">
+        <h4>不会将窗口的DOM移动到body下</h4>
+        <div>
+            <modal></modal>
+        </div>
+    </div>
+
+    <h3>teleport 模态窗口</h3>
+    <div class="outer">
+        <h4>Tooltips with Vue 3 Teleport</h4>
+        <div>
+            <teleport-modal></teleport-modal>
+        </div>
+    </div>
+
+    <h3>其他选项</h3>
+    <div class="outer">
+        <h4>其他选项</h4>
+        <pre>
+        - disabled 禁用teleport
+        - to 移动到哪个元素下 可以是选择器
+        - defer 延迟解析
+        </pre>
+        <div>
+            <teleport-modal></teleport-modal>
+        </div>
+    </div>
+</body>
+</html>
