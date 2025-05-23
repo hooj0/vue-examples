@@ -9,7 +9,22 @@
 
         const app = createApp({
             setup() {
-            }
+            },
+            components: {
+                // 局部组件
+                'a-component': {
+                    template: '<div>Simple Component</div>',
+                },
+                'b-component': {
+                    template: '<div>{{ msg }}</div>',
+                    props: {
+                        msg: {
+                            type: String,
+                            default: 'Hello Vue 3.0!',
+                        },
+                    },
+                },
+            },
         });
 
         // 全局注册组件，要在 “挂载” 之前执行
@@ -30,6 +45,16 @@
 
         app.mount("body");
     </script>
+    <style>
+        h3 {
+            color: transparent;
+            max-width: 12em;
+            border-bottom: 3px solid transparent;
+            border-image: linear-gradient(45deg, black, #ccc) 1;
+            background-image: linear-gradient(90deg, green, blue);
+            background-clip: text;
+        }
+    </style>
 </head>
 <body>
     <h3>全局组件</h3>
@@ -40,6 +65,8 @@
     <simple-component></simple-component>
 
     <h3>局部组件</h3>
+    <a-component></a-component>
+    <b-component></b-component>
     <a href="http://localhost:5173/" target="_blank">组件注册</a>
 </body>
 </html>
