@@ -5,16 +5,122 @@
     <title>状态管理</title>
     <link rel="stylesheet" href="../global.css"/>
     <script type="module">
-        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+        import {ref, createApp, reactive} from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const store = reactive({
+            count: 0,
+        });
+
+        const storePlus = reactive({
+            count: 0,
+            increment() {
+                this.count++;
+            }
+        });
+
+        // 全局状态
+        const GLOBAL_COUNT = ref(0);
+
+        function storeCount() {
+            // 局部状态
+            const localCount = ref(1);
+
+            return {
+                localCount,
+                GLOBAL_COUNT,
+            }
+        }
 
         createApp({
             setup() {
-
+                return {
+                    store,
+                    storePlus,
+                };
+            },
+            components: {
+                "counter-a": {
+                    data() {
+                        return {
+                            store,
+                        }
+                    },
+                    template: `<div>From A: {{ store.count }} <button @click="store.count++">+</button></div>`
+                },
+                "counter-b": {
+                    data() {
+                        return {
+                            store,
+                        }
+                    },
+                    template: `<div>From B: {{ store.count }} <button @click="store.count++">+</button></div>`
+                },
+                "counter-1": {
+                    data() {
+                        return {
+                            storePlus,
+                        }
+                    },
+                    template: `<div>From A: {{ storePlus.count }} <button @click="storePlus.increment()">+</button></div>`
+                },
+                "counter-2": {
+                    data() {
+                        return {
+                            storePlus,
+                        }
+                    },
+                    template: `<div>From B: {{ storePlus.count }} <button @click="storePlus.increment()">+</button></div>`
+                },
+                "counter-x": {
+                    data() {
+                        return {
+                            storePro: storeCount()
+                        }
+                    },
+                    template: `
+                    <li>AAA:</li>
+                    <div>From localCount: {{ storePro.localCount }} <button @click="storePro.localCount++">+</button></div>
+                    <div>From GLOBAL_COUNT: {{ storePro.GLOBAL_COUNT }} <button @click="storePro.GLOBAL_COUNT++">+</button></div>
+                    `
+                },
+                "counter-y": {
+                    data() {
+                        return {
+                            storePro: storeCount()
+                        }
+                    },
+                    template: `
+                    <li>BBB:</li>
+                    <div>From localCount: {{ storePro.localCount }} <button @click="storePro.localCount++">+</button></div>
+                    <div>From GLOBAL_COUNT: {{ storePro.GLOBAL_COUNT }} <button @click="storePro.GLOBAL_COUNT++">+</button></div>
+                    `
+                }
             }
         }).mount("body");
     </script>
+    <style>
+        li {
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
+    <h3>简单的状态管理</h3>
+    <div>
+        <counter-a></counter-a>
+        <counter-b></counter-b>
+    </div>
 
+    <h3>低耦合状态管理</h3>
+    <div>
+        <counter-1></counter-1>
+        <counter-2></counter-2>
+    </div>
+
+    <h3>全局和局部状态</h3>
+    <div>
+        <counter-x></counter-x>
+        <counter-y></counter-y>
+    </div>
 </body>
 </html>
