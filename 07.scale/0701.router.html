@@ -2,14 +2,63 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>这是模板</title>
+    <title>路由</title>
     <script type="module">
         import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
 
-        createApp({
-            setup() {
+        const routes = {
+            "/": "home",
+            "/about": "about",
+        };
 
+        createApp({
+            data() {
+                return {
+                    currentPath: window.location.hash,
+                }
+            },
+            computed: {
+                currentView() {
+                    return routes[this.currentPath.slice(1) || "/"] || "notfound";
+                }
+            },
+            mounted() {
+                window.addEventListener("hashchange", () => {
+                    this.currentPath = window.location.hash;
+                });
             }
+        }).component("home", {
+            template: `
+                <div>
+                    <h3>{{title}}</h3>
+                    <button @click="title = 'Vue3'">change</button>
+                </div>
+            `,
+            setup() {
+                const title = ref("Home");
+                return {
+                    title
+                }
+            }
+        }).component("about", {
+            template: `
+                <div>
+                    <h3>{{title}}</h3>
+                    <button @click="title = 'Vue'">change</button>
+                </div>
+            `,
+            setup() {
+                const title = ref("About");
+                return {
+                    title
+                }
+            }
+        }).component("notfound", {
+            template: `
+                <div>
+                    <h3>404</h3>
+                </div>
+            `
         }).mount("body");
     </script>
     <style>
@@ -21,9 +70,19 @@
             background-image: linear-gradient(90deg, green, blue);
             background-clip: text;
         }
+
+        a {
+            margin: auto 10px;
+        }
     </style>
 </head>
 <body>
-
+<div>
+    <a href="#/">Home</a>
+    <a href="#/about">About</a>
+    <a href="#/not-found-page">Not Found</a>
+    <hr/>
+    <component :is="currentView"></component>
+</div>
 </body>
 </html>
