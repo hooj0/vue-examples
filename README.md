@@ -48,3 +48,7 @@ npx serve
 # 文档
 1. [Vue3官方文档](https://v3.cn.vuejs.org/guide/introduction.html)
 2. [快查文档](https://wangchujiang.com/reference/docs/vue.html)
+3. [测试 - vitest](https://vitest.dev/guide/)
+4. [状态管理 - pinia](https://pinia.vuejs.org/zh/core-concepts/)
+5. [构建工具 - vite](https://cn.vitejs.dev/guide/)
+6. [轻量级无构建 - petite-vue](https://github.com/vuejs/petite-vue)
