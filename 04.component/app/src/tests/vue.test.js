@@ -1,3 +1,5 @@
+// https://cn.vitest.dev/api/expect.html
+// https://cn.vitest.dev/api/assert.html
 import { expect, test, describe } from 'vitest'
 
 const sum = (a, b) => a + b;
