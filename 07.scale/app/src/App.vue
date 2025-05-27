@@ -10,7 +10,7 @@ const counterStore = useCounterStore();
 counterStore.hasChanged = false;
 counterStore.isAdmin = true;
 
-const update = function () {
+const replace = function () {
     counterStore.$patch({count: 100, name: '张三2'});
 };
 
@@ -20,6 +20,7 @@ const updateItems = function () {
         state.name = '张三3';
         state.items.push('item-' + Math.round(Math.random() * 100));
     });
+    counterStore.hasChanged = true;
 };
 
 // 订阅状态
@@ -53,9 +54,9 @@ const { increment, output } = counterStore
         <hr/>
         <div>
             <button @click="counterStore.increment()">增加</button>
-            <button @click="counterStore.$reset()">重置状态</button>
-            <button @click="update">变更数据</button>
-            <button @click="updateItems">变更数组</button>
+            <button @click="counterStore.$reset()">重置</button>
+            <button @click="replace">替换</button>
+            <button @click="updateItems">变更</button>
             <button @click="counterStore.pushItems('item-' + Math.round(Math.random() * 100))">添加数组</button>
             <button @click="counterStore.output()">输出日志</button>
             <button @click="output()">输出日志</button>
