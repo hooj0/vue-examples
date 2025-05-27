@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动态渲染</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { h, createApp, ref } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            setup() {
+                const vnode = h("div", {
+                    class: "container",
+                    ".name": "test", "^width": '100',
+                    style: {
+                        width: '100px',
+                        height: '100px',
+                        backgroundColor: '#ccc'
+                    },
+                    innerHTML: "小方块",
+                    onClick:  () => {
+                        console.log("点击了");
+                    }
+                });
+
+                const tmp = h("div", 'tmp node');
+                const root = h("div", {
+                    class: "container", id: "abc"
+                }, [
+                    vnode,
+                    h("div", {id: 1233}, "hallo"),
+                    h("div", "world"),
+                    h("div", [h("span", "hello")]),
+                    tmp,
+                    tmp
+                ]);
+
+                const message = ref("hello world")
+                return {
+                    root,
+                    message
+                }
+            },
+            render() {
+                return [
+                    h("h3", "h函数动态创建节点"),
+                    this.root,
+                    h("div", this.message)
+                ];
+            },
+        }).mount("body");
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+    <h3>h 函数动态创建节点</h3>
+</body>
+</html>
