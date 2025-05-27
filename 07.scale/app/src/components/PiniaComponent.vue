@@ -1,5 +1,5 @@
 <script>
-import {mapActions, mapState, mapStores} from "pinia";
+import {mapActions, mapState, mapStores, mapWritableState} from "pinia";
 import {useCounterStore} from "../libs/CounterOptions.js";
 
 export default {
@@ -18,7 +18,9 @@ export default {
                 // 访问上面的 mapState 注册属性
                 return store.double + this.double + this.doublePlus
             },
-        })
+        }),
+        // 可以读写的状态（不能返回函数）
+        ...mapWritableState(useCounterStore, ["count", "name"])
     },
     methods: {
         add() {
@@ -32,15 +34,18 @@ export default {
 </script>
 
 <template>
-    <div>count: {{counterStore.count}}</div>
-    <div>name: {{counterStore.name}}</div>
+    <div>counterStore.count: {{counterStore.count}}</div>
+    <div>counterStore.name: {{counterStore.name}}</div>
     <div>double : {{ double }}</div>
     <div>doublePlus : {{ doublePlus }}</div>
     <div>myDouble : {{ myDouble }}</div>
     <div>ohDouble : {{ ohDouble }}</div>
     <div>magicValue: {{magicValue}}</div>
-    <button @click="add">add</button>
-    <button @click="increment">increment</button>
+    <button @click="add">method - add</button>
+    <button @click="increment">method - increment</button>
+    <button @click="count = 1">Writable - count</button>
+    <button @click="name = 'jack'">Writable - name</button>
+    <button @click="double = 11">ERROR - readOnly</button>
 </template>
 
 <style scoped>
