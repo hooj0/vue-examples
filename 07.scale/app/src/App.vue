@@ -27,8 +27,12 @@ counterStore.$subscribe((mutation,  state) => {
     console.log('状态被修改：', mutation, state);
 });
 
-// 解构 getter 函数
-const { getItem, getActiveItem } = storeToRefs(counterStore)
+// 解构 getter 函数（提取为 ref）
+// 跳过所有的 action 或非响应式 (不是 ref 或 ) 的属性
+const { getItem, getActiveItem } = storeToRefs(counterStore);
+
+// 作为 action 的 increment 可以直接解构
+const { increment, output } = counterStore
 </script>
 
 <template>
@@ -54,6 +58,8 @@ const { getItem, getActiveItem } = storeToRefs(counterStore)
             <button @click="updateItems">变更数组</button>
             <button @click="counterStore.pushItems('item-' + Math.round(Math.random() * 100))">添加数组</button>
             <button @click="counterStore.output()">输出日志</button>
+            <button @click="output()">输出日志</button>
+            <button @click="increment()">增加</button>
         </div>
         <hr/>
     </div>
