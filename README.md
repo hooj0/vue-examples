@@ -45,6 +45,15 @@ npm run format
 npx serve
 ```
 
+## 基于 Vite 创建应用
+```bash
+npm create vite@latest my-vue-app --template vue
+cd my-vue-app
+npm install
+npm run dev
+```
+
+
 # 文档
 1. [Vue3官方文档](https://v3.cn.vuejs.org/guide/introduction.html)
 2. [快查文档](https://wangchujiang.com/reference/docs/vue.html)
