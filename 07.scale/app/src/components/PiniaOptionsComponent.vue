@@ -16,11 +16,17 @@ export default {
             return this.counterStore.count * 2;
         }
     },
+    methods: {
+        add() {
+            this.counterStore.increment();
+        }
+    }
 }
 </script>
 
 <template>
     <div>calculate: {{ calculate }}</div>
+    <button @click="add">add</button>
 </template>
 
 <style scoped>

@@ -13,7 +13,7 @@ export default {
             myDouble: "double",
             // 自定义方法
             ohDouble: (store) => store.double * 2,
-            // 它可以访问 `this`，但它没有标注类型...
+            // 它可以访问 `this`
             magicValue(store) {
                 // 访问上面的 mapState 注册属性
                 return store.double + this.double + this.doublePlus
@@ -29,6 +29,10 @@ export default {
         },
         // 可以访问 increment()
         ...mapActions(useCounterStore, ["increment"]),
+        ...mapActions(useCounterStore, {
+            // 映射 `this.myCustomMethod()` 到 `counterStore.increment()`
+            myCustomMethod: "increment",
+        }),
     }
 };
 </script>
@@ -43,6 +47,7 @@ export default {
     <div>magicValue: {{magicValue}}</div>
     <button @click="add">method - add</button>
     <button @click="increment">method - increment</button>
+    <button @click="myCustomMethod">method - myCustomMethod</button>
     <button @click="count = 1">Writable - count</button>
     <button @click="name = 'jack'">Writable - name</button>
     <button @click="double = 11">ERROR - readOnly</button>

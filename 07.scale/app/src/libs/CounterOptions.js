@@ -43,9 +43,17 @@ export const useCounterStore = defineStore('counter', {
     actions: {
         increment() {
             this.count++
+            return this.count;
         },
         output() {
             console.log(this.count, this.name, this.age, this.isAdmin, this.items, this.hasChanged);
+        },
+        async incrementAsync() {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            this.count++;
+        },
+        readOther() {
+            // 可以访问其他 store
         },
     }
 });
