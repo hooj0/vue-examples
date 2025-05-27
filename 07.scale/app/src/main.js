@@ -10,6 +10,7 @@ const app = createApp(App);
 // 注册pinia组件
 const pinia = createPinia();
 app.use(pinia);
+app.provide('appProvided', 'abc.xyz');
 app.mount('#app');
 
 //-----以下是pinia示例代码------------------------------------------------------------------------------
