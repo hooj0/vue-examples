@@ -1,6 +1,11 @@
 import {defineStore} from 'pinia'
 import {useCounterStore as useCounter} from "./CounterComposition.js";
 
+/*
+state 是 store 的数据 (data)，
+getters 是 store 的计算属性 (computed)，
+而 actions 则是方法 (methods)
+*/
 // counter 是 store 的ID，唯一性
 export const useCounterStore = defineStore('counter', {
     state: () => ({
