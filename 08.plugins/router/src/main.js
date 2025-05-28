@@ -10,6 +10,8 @@ import NotFoundView from "./components/NotFoundView.vue";
 import UserView from "./components/UserView.vue";
 import RouterMatchView from "./components/RouterMatchView.vue"
 import ChildrenView from "./components/ChildrenView.vue"
+import PropsView from "./components/PropsView.vue"
+
 
 const router = createRouter({
     history: createWebHistory(),
@@ -43,6 +45,26 @@ const router = createRouter({
                 { path: 'config', component: ChildrenView },
             ]
         },
+        // 重定向
+        { path: '/admin/home', redirect: '/' },
+        { path: '/admin/product', redirect: {name: 'product-detail', params: {id: 1}} },
+        { path: '/search', component: ChildrenView },
+        // 带参数的 redirect
+        { path: '/admin/search/:text', redirect: to => {
+                return {path: "/search", query: {q: to.params.text}}
+            }
+        },
+        // 相对重定向
+        { path: '/admin/page', redirect: to => {
+                return to.path.replace(/page$/, 'product');
+            }
+        },
+        // 别名
+        { path: '/admin/settings', component: RouterMatchView, alias: ['/admin/cfg', '/admin/c/:id'] },
+        // 传递 props 属性
+        { path: '/props/:id', component: PropsView, props: true },
+        { path: '/props/flag', component: PropsView, props: {flag: true} },
+        { path: '/props/search', component: PropsView, props: route => ({query: route.query.q}) },
     ]
 });
 

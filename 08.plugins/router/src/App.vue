@@ -25,6 +25,18 @@
         <RouterLink to="/product/2/detail">详情</RouterLink>
         <RouterLink :to="{ name: 'product-detail', params: { id: 666999 } }">详情/命名路由</RouterLink>
 
+        <hr/>
+        <router-link to="/admin/home">用户首页</router-link>
+        <router-link to="/admin/product">用户商品</router-link>
+        <router-link to="/admin/search/mouse">搜索</router-link>
+        <router-link to="/admin/page">用户页</router-link>
+        <router-link to="/admin/cfg">用户配置</router-link>
+        <router-link to="/admin/c/file">用户配置</router-link>
+
+        <hr/>
+        <router-link to="/props/abc111">传递Props</router-link>
+        <router-link to="/props/flag">对象Props</router-link>
+        <router-link to="/props/search?q=aabbcvc">函数Props</router-link>
     </nav>
     <main>
         <RouterView />
