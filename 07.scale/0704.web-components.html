@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web 组件</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { ref, createApp, defineCustomElement } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const MyElement = defineCustomElement({
+            // 这里的属性和 vue 组件选项一样的
+            props: {
+                selected: Boolean,
+                index: Number
+            },
+            emits: ["go"],
+            template: `<div @click="$emit('go')">
+                element-{{ index }}
+                <slot/>
+            </div>`,
+            // defineCustomElement 特有的：注入进 shadow root 的 CSS
+            styles: [],
+        });
+
+        const MySlotElement = defineCustomElement({
+            emits: ["go"],
+            template: `<div @click="$emit('go')">
+                <slot name="foot"></slot>
+            </div>`,
+        });
+
+        // 注册自定义元素，页面中的 <my-element> 会升级为自定义元素
+        customElements.define('my-element', MyElement);
+        customElements.define('my-slot-element', MySlotElement);
+
+        // 在注册之后，可以动态添加自定义元素
+        document.getElementById('el').appendChild(new MyElement());
+
+        const app = createApp({
+            setup() {
+                return  {
+                    user: ref({ name: 'jack' }),
+                };
+            }
+        }).mount("body");
+
+        // 将所有带短横线的标签名都视为自定义元素
+        // app.config.compilerOptions.isCustomElement = (tag) => tag.includes("-");
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+    <h3>自定义元素</h3>
+    <my-element selected index="1" @go="console.warn('gogogo!')">
+        插槽元素
+    </my-element>
+
+    <my-slot-element selected index="2" @go="console.warn('yoyo!')">
+        <div slot="foot">world</div>
+    </my-slot-element>
+
+    <div id="el"></div>
+</body>
+</html>
