@@ -27,6 +27,7 @@ const router = createRouter({
         { path: '/user/:id/posts/:postId', component: UserView },
         { path: '/about', component: AboutView },
         { path: '/:pathMatch(.*)*', component: NotFoundView },
+
         // 匹配数字
         { path: '/order/:orderId(\\d+)', component: RouterMatchView },
         // 匹配字符串
@@ -35,6 +36,7 @@ const router = createRouter({
         { path: '/order/:productName', component: RouterMatchView, sensitive: true },
         // 匹配任意字符
         { path: '/order/:productName', component: RouterMatchView, wildcard: true },
+
         // 使用 ? 修饰符(0 个或 1 个)将一个参数标记为可选
         // 将匹配 /product, /Product, 以及 /product/42 而非 /product/ 或 /product/42/
         { path: '/product/:id', component: RouterMatchView,
@@ -45,10 +47,10 @@ const router = createRouter({
                 { path: 'detail', component: ChildrenView, name: 'product-detail' },
             ]
         },
-        { path: '/admin',
+        { path: '/product',
             children: [
-                { path: 'users', component: ChildrenView },
-                { path: 'config', component: ChildrenView },
+                { path: 'users', component: ChildrenView, meta: { admin: 'root'} },
+                { path: 'config', component: ChildrenView, meta: { admin: 'root', user: 'jack' } },
             ]
         },
         // 重定向
@@ -80,6 +82,10 @@ router.beforeEach((to, from, next) => {
     // from 表示当前正在离开的路由
     // next 表示路由导航
     console.log('beforeEach', to, from);
+
+    if (to.path.startsWith('/product')) {
+        console.log('meta:', to.meta);
+    }
 
     if (to.path === '/about') {
         next(false); // 阻止导航
