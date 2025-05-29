@@ -43,6 +43,10 @@
         <router-link to="/props/abc111">传递Props</router-link>
         <router-link to="/props/flag">对象Props</router-link>
         <router-link to="/props/search?q=aabbcvc">函数Props</router-link>
+
+        <hr/>
+        <b>account：</b>
+        <router-link to="/account/123/edit">组合式访问</router-link>
     </nav>
     <main>
         <RouterView />
