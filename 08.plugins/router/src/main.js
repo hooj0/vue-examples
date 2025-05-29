@@ -1,4 +1,4 @@
-import { createApp } from 'vue'
+import {createApp, inject} from 'vue'
 import {createRouter, createWebHistory} from "vue-router";
 
 import './style.css'
@@ -12,11 +12,15 @@ import RouterMatchView from "./components/RouterMatchView.vue"
 import ChildrenView from "./components/ChildrenView.vue"
 import PropsView from "./components/PropsView.vue"
 
-
 const router = createRouter({
     history: createWebHistory(),
     routes: [
-        { path: '/', component: HomeView },
+        { path: '/', component: HomeView,
+            // 独享守卫
+            beforeEnter: (to, from) => {
+                console.log('Home => beforeEnter', to, from);
+            }
+        },
         { path: '/user/:id', component: UserView },
         { path: '/user/:id/posts/:postId', component: UserView },
         { path: '/about', component: AboutView },
@@ -68,4 +72,35 @@ const router = createRouter({
     ]
 });
 
-createApp(App).use(router).mount('#app');
+// 全局前置守卫
+router.beforeEach((to, from, next) => {
+    // to 表示正要进入的路由
+    // from 表示当前正在离开的路由
+    // next 表示路由导航
+    console.log('beforeEach', to, from);
+
+    if (to.path === '/about') {
+        next(false); // 阻止导航
+    } else {
+        next();
+    }
+
+    const global = inject('global');
+    console.log('global: ', global);
+});
+
+// 全局解析守卫
+router.beforeResolve((to, from, next) => {
+    console.log('beforeResolve', to, from, to.meta);
+    next();
+});
+
+// 全局后置守卫
+router.afterEach((to, from, failure) => {
+    console.log('afterEach', to, from, failure);
+});
+
+createApp(App)
+.provide("global", {  name: 'global', message: 'hallo'})
+.use(router)
+.mount('#app');

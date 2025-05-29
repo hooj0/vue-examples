@@ -3,7 +3,7 @@
 </script>
 
 <template>
-    <h2>Router App!</h2>
+    <h2>Router App</h2>
     <p>
         <strong>Current route path:</strong> {{ $route.fullPath }}
     </p>
