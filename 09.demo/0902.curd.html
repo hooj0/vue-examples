@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>增删改查</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            data() {
+                return {
+                    names: ['张三, jack', '李四, tom', '王五, jackson', '麻子, mazi'],
+                    selected: '',
+                    prefix: '',
+                    first: '',
+                    last: '',
+                };
+            },
+            computed: {
+                filterNames() {
+                    return this.names.filter(name => name.toLowerCase().startsWith(this.prefix.toLowerCase()));
+                }
+            },
+            watch: {
+                selected(name) {
+                    [this.first, this.last] = name.split(', ');
+                }
+            },
+            methods: {
+                add() {
+                    if (this.isNotEmpty()) {
+                        this.names.push(this.fullName());
+                        this.clear();
+                    }
+                },
+                remove() {
+                    this.names.splice(this.selectedIndex(), 1);
+                    this.clear();
+                },
+                update() {
+                    if (this.isNotEmpty() && this.selected) {
+                        // this.names.splice(this.selectedIndex(), 1, this.fullName());
+                        this.names[this.selectedIndex()] = this.selected = this.fullName();
+                    }
+                },
+                isNotEmpty() {
+                    return this.first.trim() && this.last.trim();
+                },
+                fullName() {
+                    return this.first + ', ' + this.last;
+                },
+                selectedIndex() {
+                    return this.names.indexOf(this.selected);
+                },
+                clear() {
+                    this.selected = this.first = this.last = '';
+                },
+            }
+        }).mount("body");
+    </script>
+    <style>
+        * {
+            font-size: inherit;
+        }
+
+        input {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        select {
+            float: left;
+            margin: 0 1em 1em 0;
+            width: 14em;
+        }
+
+        .buttons {
+            clear: both;
+        }
+
+        button + button {
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h3>CRUD - 增删改查示例</h3>
+    <div><input v-model="prefix" placeholder="过滤前缀"></div>
+    <select size="5" v-model="selected">
+        <option v-for="name in filterNames" :key="name">{{ name }}</option>
+    </select>
+
+    <label>中文名称：<input v-model="first" /></label>
+    <label>英文名称：<input v-model="last" /></label>
+
+    <div class="buttons">
+        <button @click="add">添加</button>
+        <button @click="remove">删除</button>
+        <button @click="update">修改</button>
+    </div>
+</body>
+</html>
