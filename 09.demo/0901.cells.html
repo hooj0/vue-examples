@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>单元格</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { reactive, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const ROWS = 20;
+        const COLS = 5;
+
+        const cells = reactive(Array.from(Array(COLS).keys()).map((col) => Array.from(Array(ROWS).keys()).map(() => "")));
+        const cols = cells.map((_, index) => String.fromCharCode(index + 65));
+
+        function evalCell(expression) {
+            if (!expression.startsWith("=")) {
+                return expression;
+            }
+
+            expression = expression.slice(1).replace(/\b([A-Z]+)(\d{1,2})\b/g, (_, col, row) => `get(${col.charCodeAt(0) - 65},${row})`);
+
+            try {
+                return new Function("get", `return ${expression}`)(function (col, row) {
+                    const val = evalCell(cells[col][row]);
+                    const num = Number(val);
+                    return Number.isFinite(num) ? num : val;
+                });
+            } catch (e) {
+                return `Error: ${e}`;
+            }
+        }
+
+        createApp({
+            components: {
+                Cell: {
+                    template: "#cell-template",
+                    props: {
+                        row: Number,
+                        col: Number,
+                    },
+                    data() {
+                        return {
+                            editing: false,
+                            cells,
+                        }
+                    },
+                    methods: {
+                        evalCell,
+                        updateCell(e) {
+                            cells[this.col][this.row] = e.target.value.trim();
+                            this.editing = false;
+                        },
+                    },
+                }
+            },
+            data() {
+                return {
+                    cells,
+                    cols,
+                };
+            }
+        }).mount("body");
+    </script>
+    <style>
+        body {
+            margin: 0;
+        }
+
+        table {
+            border-collapse: collapse;
+            table-layout: fixed;
+            width: 100%;
+        }
+
+        th {
+            background-color: #eee;
+        }
+
+        tr:first-of-type th {
+            width: 100px;
+        }
+
+        tr:first-of-type th:first-of-type {
+            width: 25px;
+        }
+
+        td {
+            border: 1px solid #ccc;
+            height: 1.5em;
+            overflow: hidden;
+        }
+        .cell, .cell input {
+            height: 1.5em;
+            line-height: 1.5;
+            font-size: 15px;
+        }
+
+        .cell span {
+            padding: 0 6px;
+        }
+
+        .cell input {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+    </style>
+</head>
+
+<template id="cell-template">
+    <div class="cell" :title="cells[col][row]" @click="editing = true">
+        <input v-if="editing"
+               :value="cells[col][row]"
+               @blur="updateCell"
+               @change="updateCell"
+               @keyup.esc="editing = false"
+               @vue:mounted="({ el }) => el.focus()"
+        />
+        <span v-else>{{ evalCell(cells[col][row]) }}</span>
+    </div>
+</template>
+
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th></th>
+                <th v-for="col in cols">{{ col }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="row in cells[0].length">
+                <th>{{ row - 1 }}</th>
+                <td v-for="(col, index) in cols">
+                    <Cell :row="row - 1" :col="index" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
