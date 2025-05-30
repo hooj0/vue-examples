@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>计时器</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            data() {
+                return {
+                    duration: 15 * 1000,
+                    elapsed: 0,
+                };
+            },
+            created() {
+                this.reset();
+            },
+            unmounted() {
+                cancelAnimationFrame(this.handle);
+            },
+            computed: {
+                progressRate() {
+                    return Math.min(this.elapsed / this.duration, 1);
+                },
+            },
+            methods: {
+                update() {
+                    this.elapsed = performance.now() - this.lastTime;
+                    if (this.elapsed >= this.duration) {
+                        cancelAnimationFrame(this.handle);
+                    } else {
+                        this.handle = requestAnimationFrame(this.update);
+                    }
+                },
+                reset() {
+                    this.elapsed = 0;
+                    this.lastTime = performance.now();
+                    this.update();
+                },
+            }
+        }).mount("body");
+    </script>
+    <style>
+    </style>
+</head>
+<body>
+    <h3>倒计时</h3>
+    <label>
+        剩余进度：<progress :value="progressRate" max="1"></progress>
+    </label>
+    <div>
+        <label>
+            已用时：{{ (elapsed / 1000).toFixed(1) }}s
+        </label>
+    </div>
+    <div>
+        <label>
+            倒计时：<input type="range" min="1" max="30000" v-model="duration">
+        </label>
+        {{ (duration / 1000).toFixed(1) }}s
+    </div>
+
+    <button @click="reset">Reset</button>
+</body>
+</html>
