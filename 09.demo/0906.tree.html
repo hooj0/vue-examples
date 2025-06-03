@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>树形组件</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            components: {
+                treeItem: {
+                    name: 'tree-item',
+                    props: {
+                        model: Object,
+                    },
+                    data() {
+                        return {
+                            open: false,
+                        }
+                    },
+                    computed: {
+                        isLeaf() {
+                            return !this.model.children || this.model.children.length == 0;
+                        }
+                    },
+                    methods: {
+                        toggle() {
+                            if (!this.isLeaf) {
+                                this.open = !this.open;
+                            }
+                        },
+                        changeType() {
+                            if (this.isLeaf) {
+                                this.model.children = [];
+                                this.addChild();
+                                this.open = true;
+                            }
+                        },
+                        addChild() {
+                            this.model.children.push({
+                                name: 'new item',
+                            });
+                        },
+                    },
+                    template: '#tree-template',
+                }
+            },
+            data() {
+                return {
+                    treeData: {
+                        name: 'root',
+                        children: [
+                            {
+                                name: 'item1',
+                            },
+                            {
+                                name: 'item2',
+                            },
+                            {
+                                name: 'item3',
+                                children: [
+                                    {
+                                        name: 'item3.1',
+                                    },
+                                    {
+                                        name: 'item3.2',
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                }
+            }
+        }).mount("body");
+    </script>
+    <style>
+        .item {
+            cursor: pointer;
+            line-height: 1.5;
+        }
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<template id="tree-template">
+    <li>
+        <div @click="toggle" @dbclick="changeType" :class="{ bold: isLeaf }">
+            {{ model.name }}
+            <span v-if="!isLeaf">[{{ open ? '-' : '+' }}]</span>
+        </div>
+
+        <ul v-show="open" v-if="!isLeaf">
+            <tree-item v-for="child in model.children" :model="child" :key="child.name" class="item"></tree-item>
+            <li class="add" @click="addChild">+</li>
+        </ul>
+    </li>
+</template>
+
+<body>
+    <ul>
+        <tree-item :model="treeData" class="item"></tree-item>
+    </ul>
+</body>
+</html>
