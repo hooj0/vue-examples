@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>动画列表</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        const defaultItems = () => [1, 2, 3, 4, 5];
+        let id = defaultItems().length + 1;
+
+        createApp({
+            data() {
+                return  {
+                    items: defaultItems(),
+                }
+            },
+            methods: {
+                add() {
+                    const i = Math.round(Math.random() * this.items.length);
+                    this.items.splice(i, 0, id++);
+                },
+                remove(item) {
+                    const index = this.items.indexOf(item);
+                    if (index >= 0) {
+                        this.items.splice(index, 1);
+                    }
+                },
+                shuffle() {
+                    this.items = [...this.items].sort(() => Math.random() - 0.5);
+                },
+                reset() {
+                    this.items = defaultItems();
+                    id = this.items.length + 1;
+                },
+            }
+        }).mount("body");
+    </script>
+    <style>
+        .list {
+            position: relative;
+            padding: 0;
+            list-style-type: none;
+        }
+
+        .item {
+            width: 100%;
+            height: 30px;
+            background-color: #f3f3f3;
+            border: 1px solid #666;
+            box-sizing: border-box;
+        }
+
+        /* 1. 声明过渡效果 */
+        .fade-move,
+        .fade-enter-active,
+        .fade-leave-active {
+            transition: all 0.5s cubic-bezier(0.55, 0, 0.1, 1);
+        }
+
+        /* 2. 声明进入和离开的状态 */
+        .fade-enter-from,
+        .fade-leave-to {
+            opacity: 0;
+            transform: scaleY(0.01) translate(30px, 0);
+        }
+
+        /* 3. 确保离开的项目被移除出了布局流
+              以便正确地计算移动时的动画效果。 */
+        .fade-leave-active {
+            position: absolute;
+        }
+
+        button {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <button @click="add">Add</button>
+    <button @click="reset">Reset</button>
+    <button @click="shuffle">Shuffle</button>
+
+    <transition-group tag="ul" name="fade" class="list">
+        <li v-for="item in items" :key="item" class="item">
+            {{ item }}
+            <button @click="remove(item)">X</button>
+        </li>
+    </transition-group>
+</body>
+</html>
