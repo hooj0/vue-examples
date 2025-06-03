@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表格过滤</title>
+    <link rel="stylesheet" href="../global.css"/>
+    <script type="module">
+        import { ref, createApp } from 'https://unpkg.com/vue@3/dist/vue.esm-browser.js'
+
+        createApp({
+            components: {
+                grid: {
+                    props: {
+                        data: Array,
+                        columns: Array,
+                        filterKey: String,
+                    },
+                    data() {
+                        return {
+                            sortKey: '',
+                            sortOrders: this.columns.reduce((data, key) => ((data[key] = 1), data), {}),
+                        }
+                    },
+                    computed: {
+                        filteredData() {
+                            const sortKey = this.sortKey;
+                            const filterKey = this.filterKey && this.filterKey.toLowerCase();
+                            const order = this.sortOrders[sortKey] || 1;
+
+                            let data = this.data.slice();
+
+                            if (filterKey) {
+                                data = data.filter(row => {
+                                    return Object.keys(row).some(key => {
+                                        return String(row[key]).toLowerCase().indexOf(filterKey) > -1;
+                                    });
+                                });
+                            }
+
+                            if (sortKey) {
+                                data = data.slice().sort((a, b) => {
+                                    a = a[sortKey];
+                                    b = b[sortKey];
+                                    return (a === b ? 0 : (a > b ? 1 : -1)) * order;
+                                });
+                            }
+                            return data;
+                        }
+                    },
+                    methods: {
+                        sortBy(key) {
+                            this.sortKey = key;
+                            this.sortOrders[key] = this.sortOrders[key] * -1;
+                        },
+                        capitalize(str) {
+                            return str.charAt(0).toUpperCase() + str.slice(1);
+                        },
+                    },
+                    template: '#grid-template',
+                }
+            },
+            data() {
+                return {
+                    searchQuery: "",
+                    gridColumns: ["name", "power"],
+                    gridData: [
+                        { name: "Chuck Norris", power: Infinity },
+                        { name: "Bruce Lee", power: 9000 },
+                        { name: "Jackie Chan", power: 7000 },
+                        { name: "Jet Li", power: 8000 },
+                        { name: "Jason Statham", power: 6000 },
+                        { name: "James Bond", power: 10000 },
+                    ]
+                };
+            }
+        }).mount("body");
+    </script>
+    <style>
+        table {
+            border: 2px solid #42b983;
+            border-radius: 3px;
+            background-color: #fff;
+        }
+
+        th {
+            background-color: #42b983;
+            color: rgba(255, 255, 255, 0.66);
+            cursor: pointer;
+            user-select: none;
+        }
+
+        td {
+            background-color: #f9f9f9;
+        }
+
+        th,
+        td {
+            min-width: 120px;
+            padding: 10px 20px;
+        }
+
+        th.active {
+            color: #fff;
+        }
+
+        th.active .arrow {
+            opacity: 1;
+        }
+
+        .arrow {
+            display: inline-block;
+            vertical-align: middle;
+            width: 0;
+            height: 0;
+            margin-left: 5px;
+            opacity: 0.66;
+        }
+
+        .arrow.asc {
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-bottom: 4px solid #fff;
+        }
+
+        .arrow.dsc {
+            border-left: 4px solid transparent;
+            border-right: 4px solid transparent;
+            border-top: 4px solid #fff;
+        }
+    </style>
+</head>
+
+<template id="grid-template">
+    <table v-if="filteredData.length">
+        <thead>
+            <tr>
+                <th v-for="key in columns"
+                    @click="sortBy(key)"
+                    :class="{ active: sortKey == key }"
+                >
+                    {{ capitalize(key) }}
+                    <span class="arrow" :class="sortOrders[key] > 0 ? 'asc' : 'dsc'">
+                    </span>
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr v-for="entry in filteredData">
+                <td v-for="key in columns">
+                    {{ entry[key] }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p v-else>No data available.</p>
+</template>
+
+<body>
+    <form id="search">
+        <input type="text" v-model="searchQuery" name="query"/>
+
+        <grid :data="gridData" :columns="gridColumns" :filter-key="searchQuery"></grid>
+    </form>
+</body>
+</html>
